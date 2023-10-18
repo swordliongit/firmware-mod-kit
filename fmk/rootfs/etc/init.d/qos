@@ -1,0 +1,540 @@
+#!/bin/sh /etc/rc.common
+
+START=70
+STOP=30
+
+QOS_DEBUG=0
+
+#qos global config
+qos_config() {
+    local cfg="$1"
+    config_get qos_mode "$cfg" Mode
+    config_get qos_enable "$cfg" Enable "false"
+
+    config_get qos_bandwidth "$cfg" Bandwidth
+    config_get qos_plan "$cfg" Plan
+    config_get enable_force_weight "$cfg" EnableForceWeight
+    config_get enable_dscp_mark "$cfg" EnableDSCPMark
+    config_get enable_802_1_p "$cfg" Enable802_1_P
+
+    append args "--interface --add -i eth0"
+    if [ $qos_bandwidth -eq 0 ]; then
+        qos_bandwidth=100000000
+    fi
+    if [ $qos_bandwidth -gt 0 ]; then
+        append args " -B `expr $qos_bandwidth / 1000`"
+    fi
+    #queue schedule mode
+    if [ "$qos_plan" = "priority" ]; then
+        append args " -m sp"
+    elif [ "$qos_plan" = "weight" ]; then
+        append args " -m dwrr"
+    elif [ "$qos_plan" = "car" ]; then
+        append args " -m car"        
+    else
+        echo "qos plan error:$qos_plan"
+        return
+    fi
+    qos_loop=`expr $qos_loop + 1`
+}
+
+#add qos schedule queue
+qos_add_queue() {
+    local cfg="$1"
+    local queue_enable
+    local queue_num
+    local queue_priority
+    local queue_weight
+    local queue_bandwidth
+    
+    args=""
+    
+    config_get queue_enable "$cfg" Enable
+    [ "$queue_enable" = "false" ] && return
+
+    config_get queue_num "$cfg" QID
+    config_get queue_priority "$cfg" Priority
+    config_get queue_weight "$cfg" Weight
+    config_get queue_bandwidth "$cfg" Bandwidth    
+
+    [ $queue_weight -lt 0 -o $queue_weight -gt 100 ] && return 
+    
+    append args "--interface --add -i eth0 -q $queue_num"
+    
+    if [ "$qos_plan" = "priority" ]; then
+        append args " -m sp"
+    elif [ "$qos_plan" = "weight" ]; then
+        append args " -m dwrr -b `expr $qos_bandwidth / 100000 \* $queue_weight`"  
+        if [ "$enable_force_weight" = "true" ]; then
+            append args " -F"
+        fi
+    elif [ "$qos_plan" = "car" ]; then
+        append args " -m car -b `expr $queue_bandwidth / 1000`"
+    else
+        echo "qos_plan error:$qos_plan"
+    fi
+    if [ "$QOS_DEBUG" -eq "1" ]; then
+        echo "qostool $args"
+    fi
+    qostool $args
+
+    #record the enable queue
+    case $queue_num in  
+    1) 
+        queue1_enable="true"
+    ;;
+    2) 
+        queue2_enable="true"
+    ;;
+    3) 
+        queue3_enable="true"
+    ;;
+    4) 
+        queue4_enable="true"
+    ;;
+    5) 
+        queue5_enable="true"
+    ;;
+    6) 
+        queue6_enable="true"
+    ;;
+    *)
+        echo "queue num error:$queue_num"
+    ;;
+    esac
+}
+
+#add application flow to queue
+qos_add_app() {
+    local cfg="$1"
+    local app_name
+    local class_queue
+
+    config_get app_name "$cfg" AppName
+    config_get class_queue "$cfg" ClassQueue
+
+    #if the queue is disable,return
+    case $class_queue in
+    1)
+        [ "$queue1_enable" != "true" ] && return
+    ;;
+    2) 
+        [ "$queue2_enable" != "true" ] && return
+    ;;
+    3) 
+        [ "$queue3_enable" != "true" ] && return
+    ;;
+    4) 
+        [ "$queue4_enable" != "true" ] && return
+    ;;
+    5) 
+        [ "$queue5_enable" != "true" ] && return
+    ;;
+    6) 
+        [ "$queue6_enable" != "true" ] && return
+    ;;
+    *)
+        echo "class_queue num error:$class_queue"
+    ;;
+    esac
+
+    [ -z $app_name ] && return
+
+    args="qostool"
+    #appliction name
+    if [ "$app_name" = "TR069" ]; then
+        append args " --business 1 --add"
+    elif [ "$app_name" = "VOIP" ]; then
+        append args " --business 2 --add"
+    else 
+        echo "app_name error:$app_name"
+        return
+    fi
+    #queue schedule mode
+    if [ "$qos_plan" = "priority" ]; then
+        append args " -m sp"
+    elif [ "$qos_plan" = "weight" ]; then
+        append args " -m dwrr"
+    elif [ "$qos_plan" = "car" ]; then
+        append args " -m car"        
+    else
+        echo "qos plan error:$qos_plan"
+        return
+    fi
+    #to which queue
+    append args " -q $class_queue"
+    append args " -i eth0"
+    if [ "$QOS_DEBUG" -eq "1" ]; then
+        echo "qostool $args"
+    fi
+    qostool $args
+}
+
+#add packet type to classification flow
+append_classify() {
+    local cfg="$1"
+    local type
+    local max
+    local min
+    local protocol
+    
+    type=`echo "$cfg" | awk -F ',' '{print $2}'`
+    max=`echo "$cfg" | awk -F ',' '{print $3}'`
+    min=`echo "$cfg" | awk -F ',' '{print $4}'`
+    protocol=`echo "$cfg" | awk -F ',' '{print $5}'`    
+
+    if [ -z $type_protocol ]; then
+        type_protocol=$protocol
+    elif [ "$type_protocol" != "$protocol" ]; then
+        echo "type protocol error,$type_protocol != $protocol"
+        return
+    fi
+
+    case "$type" in  
+    SMAC) 
+        if [ -n "$max" ]; then
+            append args " -e $max"
+        fi
+    ;;
+    DMAC)
+        if [ -n "$max" ]; then
+            append args " -E $max"
+        fi
+    ;;
+    8021P)
+        if [ -n "$max" ]; then
+            if [ $max -ge 0 -a $max -le 7 ]; then
+                append args " -v $max"
+            fi
+        fi
+    ;;
+    SIP)
+        if [ -n "$max" ]; then 
+            append args " -f $max"
+            if [ -n "$min" -a "$max" != "$min" -a "$min" != "-1" ]; then
+                append args " -y $min"
+            fi
+        fi
+    ;;
+    DIP)
+        if [ -n "$max" ]; then 
+            append args " -t $max"
+            if [ -n "$min" -a "$max" != "$min" -a "$min" != "-1" ]; then
+                append args " -z $min"
+            fi
+        fi
+    ;;
+    SPORT)
+        if [ "$protocol" = "TCP" -o "$protocol" = "UDP" ]; then
+            if [ -n "$max" ]; then
+                if [ -n "$min" -a "$min" != "-1" -a $max -gt $min ]; then
+                    append args " -s $min:$max"    
+                else
+                    append args " -s $max"
+                fi
+            fi
+        fi
+    ;;
+    DPORT)
+        if [ "$protocol" = "TCP" -o "$protocol" = "UDP" ]; then
+            if [ -n "$max" ]; then
+                if [ -n "$min" -a "$min" != "-1" -a $max -gt $min ]; then
+                    append args " -d $min:$max"
+                else
+                    append args " -d $max"
+                fi
+            fi            
+        fi
+    ;;
+    TOS)
+        if [ -n "$max" ]; then
+            if [ $max -ge 0 -a $max -le 127 ]; then
+                append args " -S $max"
+            fi
+        fi
+    ;;
+    DSCP)
+        if [ -n "$max" ]; then
+            if [ $max -ge 0 -a $max -le 63 ]; then
+                append args " -o $max"
+            fi
+        fi
+    ;;
+    WANInterface)
+        if [ -n "$max" ]; then
+            append args " -W $max"
+        fi
+    ;;        
+    LANInterface)
+        if [ -n "$max" ]; then
+            append args " -N $max"
+        fi
+    ;;
+    NULLTYPE)
+    ;;
+    *)
+        echo "type error:$type"
+    ;;
+    esac
+}
+
+#add classifiction flow to queue
+qos_add_class() {
+    local cfg="$1"
+    local class_queue
+    local dscp_value
+    local cos_value
+    local type_protocol
+    #only use when type_protocol is "TCP_UDP"
+    local args_second 
+    
+    config_get class_queue "$cfg" ClassQueue
+    config_get dscp_value "$cfg" DSCPMarkValue
+    config_get cos_value "$cfg" P_Value
+
+    #if the queue is disable,return
+    case $class_queue in  
+    1)
+        [ "$queue1_enable" != "true" ] && return
+    ;;
+    2) 
+        [ "$queue2_enable" != "true" ] && return
+    ;;
+    3) 
+        [ "$queue3_enable" != "true" ] && return
+    ;;
+    4) 
+        [ "$queue4_enable" != "true" ] && return
+    ;;
+    5) 
+        [ "$queue5_enable" != "true" ] && return
+    ;;
+    6) 
+        [ "$queue6_enable" != "true" ] && return
+    ;;
+    *)
+        echo "class_queue num error:$class_queue"
+    ;;
+    esac
+
+    args="--classify --add -i eth0 -q $class_queue"
+    if [ "$enable_dscp_mark" = "true" -a -n $dscp_value ]; then
+        if [ $dscp_value -ge 0 -a $dscp_value -le 63 ]; then
+            append args " -O $dscp_value"
+        fi
+    fi
+
+    if [ $enable_802_1_p -eq 2 -a -n $cos_value ]; then
+        if [ $cos_value -ge 0 -a $cos_value -le 7 ]; then
+            append args " -V $cos_value"
+        fi
+    fi
+
+    #queue shedule mode
+    if [ "$qos_plan" = "priority" ]; then
+        append args " -m sp"
+    elif [ "$qos_plan" = "weight" ]; then
+        append args " -m dwrr"
+    elif [ "$qos_plan" = "car" ]; then
+        append args " -m car"        
+    else
+        echo "qos plan error:$qos_plan"
+        return
+    fi    
+    
+    config_list_foreach "$cfg" "type" append_classify
+
+    [ -z $type_protocol ] && return
+
+    if [ "$type_protocol" = "TCP" ]; then
+        append args " -p tcp"
+    elif [ "$type_protocol" = "UDP" ]; then
+        append args " -p udp"
+    elif [ "$type_protocol" = "ICMP" ]; then
+        append args " -p icmp"
+    elif [ "$type_protocol" = "RTP" ]; then
+        append args " -p rtp"
+    elif [ "$type_protocol" = "TCP_UDP" ]; then
+        args_second="$args"
+        append args " -p tcp"
+        append args_second " -p udp"
+    elif [ "$type_protocol" = "ALL" ]; then
+        append args " -p all"
+    else
+       echo "type_protocol error:$type_protocol"
+    fi
+    if [ "$QOS_DEBUG" -eq "1" ]; then
+        echo "qostool $args"
+        if [ -n "$args_second" ]; then
+            echo "qostool $args_second"
+        fi
+    fi
+    qostool $args
+    if [ -n "$args_second" ]; then
+        qostool $args_second
+    fi
+}
+
+start(){
+    echo "start qos"
+	# prepare necessary modules
+    insmod sch_ingress 2>/dev/null
+	insmod sch_prio	2>/dev/null
+	insmod sch_htb	2>/dev/null
+	#insmod sch_tbf	2>/dev/null
+	insmod sch_sfq	2>/dev/null
+	#insmod act_mirred 2>/dev/null
+	insmod cls_fw 2>/dev/null
+	insmod cls_u32 2>/dev/null
+	insmod cls_flow 2>/dev/null
+    
+	config_load qos
+    
+    args=""
+    qos_loop=0
+    qos_mode="OTHER"
+    qos_enable="false"
+    qos_bandwidth=0
+    qos_plan="priority"
+    enable_force_weight="false"
+    enable_dscp_mark="false"
+    enable_802_1_p=0
+    template_num=0
+    queue1_enable="false"
+    queue2_enable="false"
+    queue3_enable="false"
+    queue4_enable="false"
+    queue5_enable="false"
+    queue6_enable="false"
+
+    #first start init
+    echo 0 > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+    [ -f /var/run/qos.start ] || {    
+        #create qos chain
+        ebtables -t broute -N QOS_BROUTE
+        ebtables -t broute -A BROUTING -j QOS_BROUTE
+        ebtables -t broute -P QOS_BROUTE RETURN
+        
+        ebtables -t nat -N QOS_PRE_MATCH
+        ebtables -t nat -A PREROUTING -j QOS_PRE_MATCH
+        ebtables -t nat -P QOS_PRE_MATCH RETURN
+
+        ebtables -t filter -N QOS_FORWARD_MATCH
+        ebtables -t filter -A FORWARD -j QOS_FORWARD_MATCH
+        ebtables -t filter -P QOS_FORWARD_MATCH RETURN
+
+        iptables -t mangle -N QOS_PRE_MATCH_UP
+        iptables -t mangle -A PREROUTING -j QOS_PRE_MATCH_UP
+
+        iptables -t mangle -N QOS_INPUT_MATCH
+        iptables -t mangle -A INPUT -j QOS_INPUT_MATCH
+
+        iptables -t mangle -N QOS_OUTPUT_MATCH
+        iptables -t mangle -A OUTPUT -j QOS_OUTPUT_MATCH
+        
+        iptables -t mangle -N QOS_POSTROUTING_MARK
+        iptables -t mangle -A POSTROUTING -j QOS_POSTROUTING_MARK
+
+        echo "start" > /var/run/qos.start
+    }
+    
+    #get global config
+    config_foreach qos_config UplinkQoS
+    #global config only config once
+    [ $qos_loop -ne 1 ] && return
+    
+    #get template_num
+    internet_mode=`echo $qos_mode | grep INTERNET`
+    tr069_mode=`echo $qos_mode | grep TR069`
+    voip_mode=`echo $qos_mode | grep VOIP`
+    iptv_mode=`echo $qos_mode | grep IPTV`
+    if [ -n "$internet_mode" -a -n "$tr069_mode" -a -n "$voip_mode" -a -n "$iptv_mode" ]; then
+        #INTERNET,TR069,VOIP,IPTV        
+        template_num=4
+    elif [ -n "$internet_mode" -a -n "$tr069_mode" -a -n "$iptv_mode" ]; then
+        #INTERNET,TR069,IPTV
+        template_num=3
+    elif [ -n "$internet_mode" -a -n "$tr069_mode" -a -n "$voip_mode" ]; then
+        #INTERNET,TR069,VOIP
+        template_num=2
+    elif [ -n "$internet_mode" -a -n "$tr069_mode" ]; then
+        #INTERNET,TR069
+        template_num=1
+    fi
+    
+    #qos and template is disable,return
+    [ "$qos_enable" != "true"  -a "$template_num" -eq "0" ] && return
+
+    #enable bridge call iptables
+    echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+    
+    #config qos template
+    if [ "$template_num" -ne "0" ]; then
+        if [ "$QOS_DEBUG" -eq "1" ]; then
+            echo "qostool --template $template_num -i eth0"
+        fi
+        qostool --template $template_num -i eth0
+        return
+    fi
+
+    if [ "$qos_mode" != "OTHER" ]; then
+        return
+    fi    
+    
+    #config port total bandwidth
+    if [ "$QOS_DEBUG" -eq "1" ]; then
+        echo "qostool $args"
+    fi
+    qostool $args
+
+    #config queue
+    config_foreach qos_add_queue PriorityQueue
+
+    #config application flow
+    config_foreach qos_add_app App
+    
+    #config classificaiton flow
+    config_foreach qos_add_class Classification
+}
+
+stop(){
+    echo "stop qos"
+    
+    qostool -R -i eth0
+
+    #clear up qos chain
+    ebtables -t broute -F QOS_BROUTE
+    ebtables -t nat -F QOS_PRE_MATCH
+    ebtables -t filter -F QOS_FORWARD_MATCH
+
+    iptables -t mangle -F QOS_PRE_MATCH_UP
+    iptables -t mangle -F QOS_INPUT_MATCH
+    iptables -t mangle -F QOS_OUTPUT_MATCH
+    iptables -t mangle -F QOS_POSTROUTING_MARK
+
+    #disable bridge call iptables
+    echo 0 > /proc/sys/net/bridge/bridge-nf-call-iptables
+    
+	# detach ingress qdiscs
+	tc qdisc del dev eth0 ingress 2>/dev/null
+	tc qdisc del dev imq0 root 2>/dev/null
+	ifconfig imq0 down 2>/dev/null
+
+	iptables -t mangle -F INGRESS_QoS 2>/dev/null															
+	iptables -t mangle -D PREROUTING -j INGRESS_QoS 2>/dev/null
+	ebtables -t nat -F INGRESS_QoS 2>/dev/null								
+	ebtables -t nat -D PREROUTING -j INGRESS_QoS 2>/dev/null
+
+    # clean modules
+    rmmod sch_ingress 2>/dev/null
+	rmmod sch_prio	2>/dev/null
+	rmmod sch_htb	2>/dev/null
+	#rmmod sch_tbf	2>/dev/null
+	rmmod sch_sfq	2>/dev/null
+	#rmmod act_mirred 2>/dev/null
+	rmmod cls_fw 2>/dev/null
+	rmmod cls_u32 2>/dev/null
+	rmmod cls_flow 2>/dev/null
+}
+

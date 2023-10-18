@@ -1,0 +1,3 @@
+/usr/lib/lua/luci/model/cbi/failsafe/passwd.lua
+/usr/lib/lua/luci/view/failsafe/applyreboot.htm
+/usr/lib/lua/luci/controller/failsafe/failsafe.lua

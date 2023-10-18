@@ -1,0 +1,4 @@
+/lib/modules/2.6.32.27/ppp_async.ko
+/etc/modules.d/30-ppp
+/lib/modules/2.6.32.27/slhc.ko
+/lib/modules/2.6.32.27/ppp_generic.ko

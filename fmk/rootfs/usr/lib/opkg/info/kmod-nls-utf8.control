@@ -1,0 +1,13 @@
+Package: kmod-nls-utf8
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1), kmod-nls-base
+Provides: 
+Source: package/kernel
+Section: kernel
+Status: unknown hold not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 1234
+Description:  Kernel module for NLS UTF-8

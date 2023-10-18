@@ -1,0 +1,17 @@
+/etc/hosts
+/etc/inittab
+/etc/group
+/etc/passwd
+/etc/profile
+/etc/shells
+/etc/sysctl.conf
+/etc/rc.local
+/etc/sysupgrade.conf
+/etc/config/system
+/etc/config/usercfg
+/etc/config/portcfg
+/etc/config/mmecfg
+/etc/config/mmecfg
+/etc/config/portcfg
+/etc/config/system
+/etc/config/usercfg

@@ -1,0 +1,6 @@
+
+config 'RateLimit' 'RateLimit_0'
+	option 'iface' 'WAN'
+	option 'ingress' '0'
+	option 'egress' '0'
+

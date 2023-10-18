@@ -1,0 +1,7 @@
+/lib/modules/2.6.32.27/xt_CONNMARK.ko
+/lib/modules/2.6.32.27/xt_conntrack.ko
+/lib/modules/2.6.32.27/xt_connmark.ko
+/lib/modules/2.6.32.27/xt_recent.ko
+/lib/modules/2.6.32.27/xt_connbytes.ko
+/etc/modules.d/42-ipt-conntrack-extra
+/lib/modules/2.6.32.27/xt_helper.ko

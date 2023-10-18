@@ -1,0 +1,28 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2008-2010 OpenWrt.org
+
+START=45
+
+FW_LIBDIR=/lib/firewall
+
+fw() {
+	. $FW_LIBDIR/core.sh
+	fw_$1 $2
+}
+
+start() {
+	fw start
+	[ -f /var/run/firewall.start ] || echo "start" > /var/run/firewall.start
+}
+
+stop() {
+	fw stop
+}
+
+restart() {
+	fw restart
+}
+
+reload() {
+	fw reload $1
+}

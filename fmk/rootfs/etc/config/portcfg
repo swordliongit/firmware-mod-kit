@@ -1,0 +1,26 @@
+
+config 'port' 'port_0'
+        option 'name' 'LAN1'
+        option 'DuplexMode' '1'
+        option 'SpeedMode' '1'
+        option 'AutoNeg' '1'
+
+config 'port' 'port_1'
+        option 'name' 'LAN2'
+        option 'DuplexMode' '1'
+        option 'SpeedMode' '1'
+        option 'AutoNeg' '1'
+
+config 'port' 'port_2'
+        option 'name' 'LAN3'
+        option 'DuplexMode' '1'
+        option 'SpeedMode' '1'
+        option 'AutoNeg' '1'
+
+config 'port' 'port_3'
+        option 'name' 'LAN4'
+        option 'DuplexMode' '1'
+        option 'SpeedMode' '1'
+        option 'AutoNeg' '1'
+
+

@@ -1,0 +1,13 @@
+Package: luci
+Version: 0.10+svn7109-1
+Depends: uhttpd, luci-mod-admin-full, luci-theme-openwrt, luci-app-firewall, libiwinfo
+Provides: 
+Source: package/luci
+Section: luci
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: LuCI Development Team <luci@lists.subsignal.org>
+Architecture: ramips
+Installed-Size: 105
+Description:  Standard OpenWrt set including full and mini admin and the standard theme

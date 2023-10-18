@@ -1,0 +1,43 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=95
+boot() {
+	[ -d /tmp/root ] && {
+		lock /tmp/.switch2jffs
+		firstboot switch2jffs
+		lock -u /tmp/.switch2jffs
+	}
+	[ -d /tmp/root/vendor ] && {
+		umount /tmp/root/vendor
+		mount -t squashfs /dev/mtdblock8 /vendor
+	}
+	# process user commands
+	[ -f /etc/rc.local ] && {
+		sh /etc/rc.local
+	}
+	# set table flags and do backups
+	local root_zone=$(fw_printenv -n root_zone)
+	local stable try	
+	if [ "${root_zone}" = "0" ]; then
+		stable=$(fw_printenv -n Image1Stable)
+		[ "$stable" = "0" ] && fw_setenv Image1Stable 1
+		try=$(fw_printenv -n Image1Try)
+		[ "$try" != "0" ] && fw_setenv Image1Try 0
+	else	
+		stable=$(fw_printenv -n Image2Stable)
+		[ "$stable" = "0" ] && fw_setenv Image2Stable 1
+		try=$(fw_printenv -n Image2Try)
+		[ "$try" != "0" ] && fw_setenv Image2Try 0
+	fi
+	# start iRoutr Daemon
+	if [ -x /usr/sbin/taskMonitor ]; then
+		/usr/sbin/taskMonitor -n 5 -c '/usr/sbin/iRouter 10 3' &
+	elif [ -x /usr/sbin/iRouter ]; then
+		/usr/sbin/iRouter &
+	fi
+	#
+	# set leds to normal state
+	. /etc/diag.sh
+	set_state done
+}

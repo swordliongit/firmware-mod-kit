@@ -1,0 +1,14 @@
+Package: kmod-nf-conntrack-netlink
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1), kmod-nfnetlink, kmod-ipt-conntrack
+Provides: 
+Source: package/kernel
+Section: kernel
+Status: unknown hold not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 8317
+Description:  Kernel modules support for a netlink-based connection tracking 
+ userspace interface

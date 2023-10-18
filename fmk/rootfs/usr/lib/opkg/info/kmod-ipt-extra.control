@@ -1,0 +1,19 @@
+Package: kmod-ipt-extra
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1), kmod-ipt-core
+Provides: 
+Source: package/kernel
+Section: kernel
+Status: unknown hold not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 3674
+Description:  Other Netfilter (IPv4) kernel modules
+ Includes:
+ - condition (2.4 only)
+ - owner
+ - physdev (if bridge support was enabled in kernel)
+ - pkttype
+ - quota

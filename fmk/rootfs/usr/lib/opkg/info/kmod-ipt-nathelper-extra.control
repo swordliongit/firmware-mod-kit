@@ -1,0 +1,21 @@
+Package: kmod-ipt-nathelper-extra
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1), kmod-ipt-core, kmod-ipt-nat, kmod-textsearch
+Provides: 
+Source: package/kernel
+Section: kernel
+Status: unknown hold not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 47437
+Description:  Extra Netfilter (IPv4) Conntrack and NAT helpers
+ Includes:
+ - amanda
+ - h323
+ - mms
+ - pptp (2.6)
+ - proto_gre (2.6)
+ - sip (2.6)
+ - snmp_basic

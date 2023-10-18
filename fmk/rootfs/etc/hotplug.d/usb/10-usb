@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Copyright (C) 2009 OpenWrt.org
+
+case "$ACTION" in
+	add)
+		# update LEDs
+		# speed up blinking
+		echo 150 > /sys/class/leds/richerlink\:green\:system/delay_on
+		echo 150 > /sys/class/leds/richerlink\:green\:system/delay_off
+		;;
+	remove)
+		# update LEDs
+		# back to default
+		echo 500 > /sys/class/leds/richerlink\:green\:system/delay_on
+		echo 500 > /sys/class/leds/richerlink\:green\:system/delay_off
+		;;
+esac	
+		

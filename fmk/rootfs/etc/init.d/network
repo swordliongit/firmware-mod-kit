@@ -1,0 +1,45 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=40
+STOP=90
+
+boot() {
+#setup_switch() { return 0; }
+
+	# lo接口初始化(原先通过开机codeplug初始化，本脚本只用与boot，start／stop操作需禁止)
+	ifconfig lo 127.0.0.1 up
+	brctl addbr br-lan
+	brctl setfd br-lan 0
+	# wanctl也有创建br1操作，以后可以屏蔽,统一在这里创建就好
+	brctl addbr br1
+	brctl setfd br1 0
+	# add the temp support subinterface
+	ifconfig eth1 up
+	ifconfig eth0 up
+	ifconfig eth1_0 up
+	ifconfig eth1_1 up
+	ifconfig eth1_2 up
+	ifconfig eth1_3 up
+#ifconfig ra0 up
+	/sbin/wifi 
+
+#	setup_switch
+}
+
+start() {
+#	setup_switch() { return 0; }
+	
+	include /lib/network
+#	setup_switch
+	ifup -a
+	#/sbin/wifi up
+}
+
+stop() {
+	ifdown -a
+}
+
+restart() {
+	start
+}

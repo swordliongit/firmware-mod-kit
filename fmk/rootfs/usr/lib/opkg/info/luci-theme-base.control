@@ -1,0 +1,13 @@
+Package: luci-theme-base
+Version: 0.10+svn7109-1
+Depends: luci-lib-web
+Provides: 
+Source: package/luci
+Section: luci
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: LuCI Development Team <luci@lists.subsignal.org>
+Architecture: ramips
+Installed-Size: 23616
+Description:  Common base for all themes

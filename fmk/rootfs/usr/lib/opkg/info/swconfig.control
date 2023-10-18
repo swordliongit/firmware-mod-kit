@@ -1,0 +1,13 @@
+Package: swconfig
+Version: 9
+Depends: libuci, libnl-tiny
+Provides: 
+Source: package/swconfig
+Section: base
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 11575
+Description:  Switch configuration utility

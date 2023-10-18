@@ -1,0 +1,76 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006-2010 OpenWrt.org
+START=50
+
+TELNETEN=0
+LISTEN_PORT=23
+
+id=55
+home=/var/
+shell=/bin/ash
+
+telnet_handle() {
+	local name
+	local password
+	local port
+
+	config_get TELNETEN "$1" enable 0
+	if [ -z  "$TELNETEN" -o "$TELNETEN" != "1" ]; then
+		return 0
+	fi
+	config_get name "$1" username ""
+	config_get password "$1" password ""
+	config_get LISTEN_PORT "$1" LISTEN_PORT 23 
+	
+	
+#	if [ -z "$(grep ^${name}: /etc/group)" ]; then
+#       		echo "adding group $name to /etc/group"
+#        	echo "${name}:x:${id}:" >> /etc/group
+#	fi
+
+#	if [ -z "$(grep ^${name}: /etc/passwd)" ]; then
+#       		echo "adding user $name to /etc/passwd"
+#   		echo "${name}:x:${id}:${id}:${name}:${home}:${shell}" >> /etc/passwd
+#	fi
+	
+#	(echo "$password" ; sleep 1 ; echo "$password" ) | passwd "$name" >/dev/null 2>&1
+}
+#has_root_pwd() {
+#	local pwd=$([ -f "$1" ] && cat "$1")
+#	      pwd="${pwd#*root:}"
+#	      pwd="${pwd%%:*}"
+#
+#	test -n "${pwd#!}"
+#}
+
+#has_ssh_pubkey() {
+#	( test -x /usr/sbin/dropbear && grep -qs "^ssh-" /etc/dropbear/authorized_keys ) || \
+#	( test -x /usr/sbin/sshd && grep -qs "^ssh-" /root/.ssh/authorized_keys )
+#}
+
+start() {
+	config_load telnetd
+	
+	config_foreach telnet_handle server
+	if [ -z  "$TELNETEN" -o "$TELNETEN" != "1" ]; then
+		stop 
+		return 0
+	fi
+	
+	
+#	if ( ! has_ssh_pubkey && \
+#	     ! has_root_pwd /etc/passwd && ! has_root_pwd /etc/shadow ) || \
+#	   ( [ ! -x /usr/sbin/dropbear ] && [ ! -x /usr/sbin/sshd ] );
+#	then
+#		telnetd -l /bin/login.sh
+		telnetd -l /bin/login -p ${LISTEN_PORT}
+#	fi
+}
+
+stop() {
+	killall telnetd 2>/dev/null
+}
+reload() {
+	stop
+	start
+}

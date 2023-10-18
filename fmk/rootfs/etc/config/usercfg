@@ -1,0 +1,3 @@
+config usercfg 'usercfg_0'
+	option user 'useradmin'
+	option admin 'R3000admin'	

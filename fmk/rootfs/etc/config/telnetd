@@ -1,0 +1,7 @@
+# Copyright (C) 2006 OpenWrt.org
+
+config server 
+	option enable	'1' 
+	option username	'telnet' 
+	option password	'telnet' 
+	option port     '23'

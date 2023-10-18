@@ -104,7 +104,7 @@ src/yaffs2utils/unspare2
 src/yaffs2utils/unyaffs2
 
 # work directory
-/fmk/
+# /fmk/
 
 # standard IDE
 /.idea/

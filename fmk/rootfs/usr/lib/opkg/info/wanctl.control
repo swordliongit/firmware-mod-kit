@@ -1,0 +1,13 @@
+Package: wanctl
+Version: 1
+Depends: 
+Provides: 
+Source: package/wanctl
+Section: wanctl
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 46722
+Description:  Wan connect config 

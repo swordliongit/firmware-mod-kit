@@ -1,0 +1,8 @@
+
+#DHCP
+config 'wanlink' 'wanlink_0'
+	option 'VlanID' '-1'
+	option 'Cos' '0'
+	option 'Servicemode' '0'
+	option 'Mode' '0'
+	option 'PortMap' 'lan1 lan2 lan3 wlan1 wlan2'	

@@ -1,0 +1,5 @@
+/lib/modules/2.6.32.27/xt_quota.ko
+/lib/modules/2.6.32.27/xt_pkttype.ko
+/lib/modules/2.6.32.27/xt_physdev.ko
+/lib/modules/2.6.32.27/xt_owner.ko
+/etc/modules.d/45-ipt-extra

@@ -1,0 +1,6 @@
+/lib/modules/2.6.32.27/xt_comment.ko
+/lib/modules/2.6.32.27/xt_limit.ko
+/etc/modules.d/40-ipt-core
+/lib/modules/2.6.32.27/xt_mac.ko
+/lib/modules/2.6.32.27/xt_TCPMSS.ko
+/lib/modules/2.6.32.27/xt_multiport.ko

@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+
+. /etc/functions.sh
+
+START=98
+STOP=10
+
+start(){
+       /sbin/eocmod &
+}
+
+stop(){
+        killall eocmod
+}
+

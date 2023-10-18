@@ -1,0 +1,13 @@
+Package: kmod-rt_rdm
+Version: 2.6.32.27+r4210-1
+Depends: kernel (=2.6.32.27-1)
+Provides: 
+Source: package/MTK-rdm
+Section: kernel
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 2350
+Description:  This package contains a driver for MTK

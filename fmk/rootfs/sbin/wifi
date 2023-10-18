@@ -1,0 +1,91 @@
+#!/bin/sh
+# Copyright (C) 2006 OpenWrt.org
+
+. /lib/functions.sh
+
+usage() {
+	cat <<EOF
+Usage: $0 [down|up]
+enables (default), disables a wifi configuration.
+EOF
+	exit 1
+}
+
+wifi_updown() {
+	
+	disable_RT5392AP
+		
+	if [ "$1" = "enable" ]; then
+		scan_wifi
+		#echo "dev=$DEVICES"
+		config_get enabled "$DEVICES" enabled
+		if [ 0 == "$enabled" ]; then
+			echo "'$DEVICES' is disabled"
+			set disable
+		else
+			scan_RT5392AP
+			eval "enable_RT5392AP" || echo "RT5392AP: enable failed"
+		fi	
+	fi	
+}
+
+wifi_detect() {
+	for driver in ${2:-$DRIVERS}; do (
+		if eval "type detect_$driver" 2>/dev/null >/dev/null; then
+			eval "detect_$driver" || echo "$driver: Detect failed" >&2
+		else
+			echo "$driver: Hardware detection not supported" >&2
+		fi
+	); done
+}
+
+
+scan_wifi() {
+	local cfgfile="$1"
+	DEVICES=
+	VIFS=
+	config_cb() {
+		local type="$1"
+		local section="$2"
+
+		# section start
+		case "$type" in
+			wifi_device)
+				DEVICES="$section"
+				[ "$DEVICES" == "RT5392AP" ] && config_set "$section" ifname "ra0"
+				config_set "$section" vifs ""
+				config_set "$section" ht_capab ""
+			;;
+			wifi_ctrl) 
+				config_get enabled "$section" enabled
+#config_set "$DEVICES" enabled $enabled
+#避免保留配置脚本用uci命令写配置时将wifi_ctrl的section写在wifi_device前面导致解析配置不对，影响wifi开关功能。
+				config_set "RT5392AP" enabled $enabled
+			;;
+		esac
+			
+		# section end
+		config_get TYPE "$CONFIG_SECTION" TYPE
+		case "$TYPE" in
+			wifi_iface)
+				append VIFS "$CONFIG_SECTION"
+			;;
+		esac
+	}
+	config_load "${cfgfile:-wireless}"
+	config_set $DEVICES vifs "$VIFS"
+	config_get vifs $DEVICES vifs
+	#echo "VIFS=$VIFS"
+}
+
+DEVICES=
+DRIVERS=
+VIFS=
+include /lib/wifi
+scan_wifi
+
+case "$1" in
+	down) wifi_updown "disable";;
+	--help|help) usage;;
+	*) wifi_updown "enable";;
+esac

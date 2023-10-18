@@ -1,0 +1,13 @@
+Package: luci-lib-ipkg
+Version: 0.10+svn7109-1
+Depends: 
+Provides: 
+Source: package/luci
+Section: luci
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: LuCI Development Team <luci@lists.subsignal.org>
+Architecture: ramips
+Installed-Size: 2227
+Description:  LuCI IPKG/OPKG call abstraction library

@@ -1,0 +1,164 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+
+START=10
+STOP=98
+
+system_config() {
+	local cfg="$1"
+
+	local hostname conloglevel timezone
+
+	config_get hostname "$cfg" hostname 'OpenWrt'
+	echo "$hostname" > /proc/sys/kernel/hostname
+	
+	#### john add for MME_info
+	echo "DeviceName=$hostname" > /tmp/MME_devinfo
+	local serial_number=`fw_printenv -n serial_number`
+	if [ -z "$serial_number" ]; then
+		serial_number=`ifconfig eth0|grep HWaddr|awk -F ' ' '{print $5}'|cut -b 4-5,7-8,10-11,13-14,16-17`
+		serial_number=`printf "%u" 0x"$serial_number"`
+	fi
+ 	echo "SerialNumber=$serial_number" >> /tmp/MME_devinfo
+	local sys_ver=$(cat /etc/banner|grep Version|awk -F ' ' '{print $2}'|cut -b 2-)
+	echo "Revision=$sys_ver" >> /tmp/MME_devinfo
+	echo "SoftwareVersion=2.0.0" >> /tmp/MME_devinfo
+	echo "SystemVersion=2.0.$sys_ver" >> /tmp/MME_devinfo
+	echo "HardwareVersion=2.0.0" >> /tmp/MME_devinfo
+	####
+	/*add voip signature file*/
+	signature_value=$(fw_printenv -n signature 2>/dev/null)
+	[ -n $signature_value ] && {
+		echo "$signature_value" > /tmp/signature
+		chmod 666 /tmp/signature
+	}
+
+	config_get conloglevel "$cfg" conloglevel
+	config_get buffersize "$cfg" buffersize
+	[ -z "$conloglevel" -a -z "$buffersize" ] || dmesg ${conloglevel:+-n $conloglevel} ${buffersize:+-s $buffersize}
+	
+	config_get timezone "$cfg" timezone 'UTC'
+	echo "$timezone" > /tmp/TZ
+
+	if [ -x /sbin/syslogd ]; then
+		local log_enable log_ip log_size log_port log_type log_file log_level
+		config_get log_enable "$cfg" log_enable 1 
+		config_get log_ip "$cfg" log_ip 
+		config_get log_size "$cfg" log_size
+		config_get log_port "$cfg" log_port 514
+		config_get log_type "$cfg" log_type circular
+		config_get log_file "$cfg" log_file "/var/log/messages"
+		config_get log_level "$cfg" log_level 3
+		log_level=$((log_level+1))
+		if [ "$log_enable" = "1" ]; then
+			if [ "$log_type" = "file" ]; then
+				syslogd ${log_size:+ -s ${log_size}} ${log_level:+-l ${log_level}} -O $log_file ${log_ip:+-L -R ${log_ip}:${log_port}} 
+			else
+				syslogd ${log_size:+ -C${log_size}} ${log_level:+-l ${log_level}} ${log_ip:+-L -R ${log_ip}:${log_port}}
+			fi
+		else
+			:
+		fi
+	fi
+	config_get klogconloglevel "$cfg" klogconloglevel
+	[ -x /sbin/klogd ] && klogd ${klogconloglevel:+-c $klogconloglevel}
+}
+
+apply_uci_config() {
+	sh -c '. /lib/functions.sh; include /lib/config; uci_apply_defaults'
+}
+
+apply_vendor_config() {
+	sh -c '. /lib/functions.sh; include /lib/config; uci_apply_vendors'
+}
+
+gen_firmware_revision () {
+	. /lib/upgrade/common.sh
+	local zone=$(fw_printenv -n root_zone)
+	case $zone in
+	0)
+		cur_rev=$(get_part_rev firmware)
+		local mtd=$(cat /proc/mtd |grep -w firmware2|awk -F: '{print $1}')
+		magic=$(cat /dev/$mtd | dd bs=4 count=1 2>/dev/null | hexdump -v -n 4 -e '1/1 "%02x"')
+		if [ "$magic" != "524c6677" ]; then
+			bak_rev=
+		else
+			bak_rev=$(get_part_rev firmware2)
+		fi
+	;;
+	1)
+		cur_rev=$(get_part_rev firmware2)
+		local mtd=$(cat /proc/mtd |grep -w firmware|awk -F: '{print $1}')
+		magic=$(cat /dev/$mtd | dd bs=4 count=1 2>/dev/null | hexdump -v -n 4 -e '1/1 "%02x"')
+		if [ "$magic" != "524c6677" ]; then
+			bak_rev=
+		else
+			bak_rev=$(get_part_rev firmware)
+		fi
+	;;	
+	esac
+	echo "cur_rev=$cur_rev" > /tmp/.REVISION	
+	echo "bak_rev=$bak_rev" >> /tmp/.REVISION	
+}
+
+start() {
+	[ -f /proc/mounts ] || /sbin/mount_root
+	[ -f /proc/jffs2_bbc ] && echo "S" > /proc/jffs2_bbc
+	[ -f /proc/net/vlan/config ] && vconfig set_name_type DEV_PLUS_VID_NO_PAD
+
+	
+	mkdir -p /var/run
+	mkdir -p /var/log
+	mkdir -p /var/lock
+	mkdir -p /var/state
+	mkdir -p /tmp/.uci
+	chmod 0700 /tmp/.uci
+	touch /var/log/wtmp
+	touch /var/log/lastlog
+	touch /tmp/resolv.conf.auto
+	ln -sf /tmp/resolv.conf.auto /tmp/resolv.conf
+#grep -q debugfs /proc/filesystems && mount -t debugfs debugfs /sys/kernel/debug
+	[ "$FAILSAFE" = "true" ] && touch /tmp/.failsafe
+
+	load_modules /etc/modules.d/*
+	usleep 10
+	# vendor's config
+	grep -qs vendor /proc/mtd && mount -t squashfs /dev/mtdblock8 /vendor
+
+	gen_firmware_revision
+	apply_uci_config
+	apply_vendor_config
+	config_load system
+	config_foreach system_config system
+
+	killall -q hotplug2
+	[ -x /sbin/hotplug2 ] && /sbin/hotplug2 --override --persistent \
+			--set-worker /lib/hotplug2/worker_fork.so \
+			--set-rules-file /etc/hotplug2.rules \
+			--max-children 1 >/dev/null 2>&1 &
+
+	# the coldplugging of network interfaces needs to happen later, so we do it manually here
+	# hotplug机制与现有wanctl机制不兼容, 屏蔽以加速启动
+	#for iface in $(awk -F: '/:/ {print $1}' /proc/net/dev); do
+	#	/usr/bin/env -i ACTION=add INTERFACE="$iface" /sbin/hotplug-call net
+	#done
+
+	# create /dev/root if it doesn't exist
+	[ -e /dev/root ] || {
+		rootdev=$(awk 'BEGIN { RS=" "; FS="="; } $1 == "root" { print $2 }' < /proc/cmdline)
+		[ -n "$rootdev" ] && ln -s "$rootdev" /dev/root
+	}
+
+	# another round of USB coldplugging to kick devices into operation which lacked drivers before
+	for dev in /sys/bus/usb/devices/*/uevent; do
+		[ -e "$dev" ] && echo -n add > "$dev"
+	done
+
+	sync
+}
+
+stop() {
+        killall -9 syslogd 2> /dev/null
+}
+

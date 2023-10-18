@@ -1,0 +1,13 @@
+Package: luci-app-ddns
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core, ddns-scripts
+Provides: 
+Source: package/luci
+Section: luci
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: LuCI Development Team <luci@lists.subsignal.org>
+Architecture: ramips
+Installed-Size: 7722
+Description:  Dynamic DNS configuration module

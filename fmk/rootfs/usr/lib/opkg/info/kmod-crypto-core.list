@@ -1,0 +1,4 @@
+/etc/modules.d/01-crypto-core
+/lib/modules/2.6.32.27/ecb.ko
+/lib/modules/2.6.32.27/deflate.ko
+/lib/modules/2.6.32.27/cbc.ko

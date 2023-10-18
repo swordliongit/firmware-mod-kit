@@ -1,0 +1,13 @@
+Package: kmod-RalinkAP
+Version: 2.6.32.27+2.7.1.5-0
+Depends: kernel (=2.6.32.27-1)
+Provides: 
+Source: package/ra_wifi
+Section: kernel
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 648672
+Description:  This package contains a driver for Ralink SoC chipsets.

@@ -1,0 +1,2 @@
+/lib/modules/2.6.32.27/input-polldev.ko
+/etc/modules.d/20-input-polldev

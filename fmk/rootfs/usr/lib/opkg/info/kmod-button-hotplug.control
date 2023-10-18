@@ -1,0 +1,13 @@
+Package: kmod-button-hotplug
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1)
+Provides: 
+Source: package/button-hotplug
+Section: kernel
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 3211
+Description:  Kernel module to generate button hotplug events

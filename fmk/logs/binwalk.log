@@ -1,0 +1,11 @@
+
+Scan Time:     2023-05-18 16:41:14
+Target File:   /home/swordwsl/firmware-mod-kit/mtd9
+MD5 Checksum:  2b8d6271f97f99811f3afeacf2eabd36
+Signatures:    344
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+16            0x10            uImage header, header size: 64 bytes, header CRC: 0x41E8CEF2, created: 2018-10-30 04:57:02, image size: 965681 bytes, Data Address: 0x88000000, Entry Point: 0x88000000, data CRC: 0x94204675, OS: Linux, CPU: MIPS, image type: OS Kernel Image, compression type: lzma, image name: "MIPS OpenWrt Linux-2.6.32.27"
+80            0x50            LZMA compressed data, properties: 0x6D, dictionary size: 8388608 bytes, uncompressed size: 2837756 bytes
+1048576       0x100000        Squashfs filesystem, little endian, version 4.0, compression:lzma, size: 3359661 bytes, 1572 inodes, blocksize: 131072 bytes, created: 2018-10-30 04:56:57
+

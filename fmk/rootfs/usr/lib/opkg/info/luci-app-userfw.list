@@ -1,0 +1,7 @@
+/usr/lib/userfw.sh
+/usr/lib/lua/luci/model/cbi/userfw/userfw.lua
+/etc/init.d/userfw
+/etc/config/userfw
+/etc/uci-defaults/luci-userfw
+/usr/lib/lua/luci/i18n/userfw.zh-cn.lmo
+/usr/lib/lua/luci/controller/userfw.lua

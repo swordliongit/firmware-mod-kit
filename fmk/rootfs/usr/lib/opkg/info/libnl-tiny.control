@@ -1,0 +1,13 @@
+Package: libnl-tiny
+Version: 0.1-2.1
+Depends: 
+Provides: 
+Source: package/libnl-tiny
+Section: libs
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 12477
+Description:  This package contains a stripped down version of libnl

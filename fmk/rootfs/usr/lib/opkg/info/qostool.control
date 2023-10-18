@@ -1,0 +1,13 @@
+Package: qostool
+Version: 1
+Depends: 
+Provides: 
+Source: package/qostool
+Section: qostool
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 9635
+Description:  Qos config 

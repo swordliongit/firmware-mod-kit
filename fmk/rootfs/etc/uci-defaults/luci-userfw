@@ -1,0 +1,10 @@
+#!/bin/sh 
+
+uci -q batch <<-EOF >/dev/null
+          delete ucitrack.@userfw[-1]
+          add ucitrack userfw
+          set ucitrack.@userfw[-1].init=userfw
+          commit ucitrack
+EOF
+rm -f /tmp/luci-indexcahe
+exit 0

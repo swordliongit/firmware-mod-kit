@@ -1,0 +1,13 @@
+Package: eocmod
+Version: 1
+Depends: libuci
+Provides: 
+Source: package/eocmod
+Section: eocmod
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 21919
+Description:  Ralink EOC module application

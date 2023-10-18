@@ -1,0 +1,52 @@
+config defaults  'defaults_0'
+	option input		ACCEPT
+	option output		ACCEPT 
+	option forward		ACCEPT
+# Uncomment this line to disable ipv6 rules
+	option disable_ipv6	1
+
+config ddos 'ddos_0'
+	option synflood_protect	0
+	option port_scan	0
+	option ping_of_death	0
+	option winnuke		0
+	option smurf		0
+	option icmp_redirect    0
+
+config algs 'algs_0'
+	option H323En 	0
+	option RTSPEn	0
+	option L2TPEn	0
+	option IPSecEn	0
+	option FTPEn	0
+
+# We need to accept udp packets on port 68,
+# see https://dev.openwrt.org/ticket/4108
+config sysfilter 'sysfilter_0'
+	option proto		udp
+	option dest_port	68
+	option target		ACCEPT
+	option family	ipv4
+
+config sysfilter 'sysfilter_1'
+	option proto		tcp
+	option dest_port	22
+	option target 		ACCEPT
+	option family		ipv4
+
+config MAC 'MAC_0'
+	option policy	deny
+	option state 0
+
+config IPPORT 'IPPORT_0'
+	option policy deny
+	option state 0
+
+config URL 'URL_0'
+	option policy	deny
+	option state 0
+
+config dmz 'dmz_0'
+    	option iface eth0
+    	option state 0
+    	option dest_ip 192.168.11.11

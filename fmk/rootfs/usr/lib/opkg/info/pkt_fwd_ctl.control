@@ -1,0 +1,13 @@
+Package: pkt_fwd_ctl
+Version: 1
+Depends: 
+Provides: 
+Source: package/pkt_fwd_ctl
+Section: pkt_fwd_ctl
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 3555
+Description:  Packet forward ctrl 

@@ -1,0 +1,13 @@
+Package: pppoe
+Version: 2.4.4-1
+Depends: 
+Provides: 
+Source: package/pppoe
+Section: pppoe
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 252431
+Description:  Pppoe client and server

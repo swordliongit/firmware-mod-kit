@@ -4,7 +4,6 @@ BINDIR=`dirname $0`
 
 DIR="$1"
 NEXT_PARAM=""
-
 if [ "$1" == "-h" ]; then
 	echo "Usage: $0 [FMK directory] [-nopad | -min]"
 	exit 1
@@ -44,6 +43,7 @@ fi
 # Always try to rebuild, let make decide if necessary
 Build_Tools
 
+
 echo "Building new $FS_TYPE file system... (this may take several minutes!)"
 
 # Clean up any previously created files
@@ -54,6 +54,7 @@ MKFS_ARGS="-all-root"
 # Build the appropriate file system
 case $FS_TYPE in
 	"squashfs")
+		
 		# Check for squashfs 4.0 realtek, which requires the -comp option to build lzma images.
 		if [ "$FS_COMPRESSION" == "xz" ]; then
             COMP="-comp xz"
@@ -98,7 +99,6 @@ case $FS_TYPE in
 			HR_BLOCKSIZE="$(($FS_BLOCKSIZE/1024))"
 			echo "Squashfs block size is $HR_BLOCKSIZE Kb"
 		fi
-
 		$SUDO $MKFS "$ROOTFS" "$FSOUT" $ENDIANESS $BS $COMP $MKFS_ARGS
 		;;
 	"cramfs")
@@ -116,6 +116,7 @@ case $FS_TYPE in
 		;;
 	"jffs2")
 		if [ "$ENDIANESS" == "-le" ]; then
+		
 			echo "Building JFFS2 file system (little endian) ..."
 			$SUDO $MKFS -r "$ROOTFS" -o "$FSOUT" --little-endian
 
@@ -123,6 +124,11 @@ case $FS_TYPE in
 			echo "Building JFFS2 file system (big endian) ..."
 			$SUDO $MKFS -r "$ROOTFS" -o "$FSOUT" --big-endian
 		fi
+		# Custom code to copy project_odoo into the newly built firmware img along with the site file
+		mv -r "$ROOTFS/etc/project_odoo" "$ROOTFS/etc/"
+		mv "$ROOTFS/etc/config/site" "$ROOTFS/etc/config/"
+		mv "$ROOTFS/etc/config/name" "$ROOTFS/etc/config/"
+		mv "$ROOTFS/etc/opkg.conf" "$ROOTFS/etc/"
 		;;
 	*)
 		echo "Unsupported file system '$FS_TYPE'!"
@@ -134,8 +140,15 @@ if [ ! -e $FSOUT ]; then
 	exit 1
 fi
 
+
 # Append the new file system to the first part of the original firmware file
 cp $HEADER_IMAGE $FWOUT
+
+#######################
+
+#######################
+
+
 $SUDO cat $FSOUT >> $FWOUT
 
 # Calculate and create any filler bytes required between the end of the file system and the footer / EOF.

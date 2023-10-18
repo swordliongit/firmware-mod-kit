@@ -1,0 +1,15 @@
+Package: iptables-mod-iprange
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-iprange
+Provides: 
+Source: package/iptables
+Section: net
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 2991
+Description:  iptables extensions for matching ip ranges.
+ Includes:
+ - libipt_iprange

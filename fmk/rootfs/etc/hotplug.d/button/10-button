@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Copyright (C) 2009 OpenWrt.org
+# Reset default button
+
+case "$ACTION" in
+	pressed)
+		# pressed the button 
+		;;
+	released)
+		# released the button 
+		# BTN_0 used as wps PBC and reset button
+		if [ "$BUTTON" = "BTN_0" ]; then
+			if [ "$SEEN" -ge "0" -a "$SEEN" -lt "3" ]; then
+				logger "$BUTTON released after $SEEN (no more than one) seconds."	
+				/sbin/dowps.sh pbc
+			else
+				logger "$BUTTON released after $SEEN (equal or more than one) seconds."	
+				if [ -x /vendor/usr/bin/userreset ]; then
+					/vendor/usr/bin/userreset && reboot
+				else
+					fw_setenv customized 0 && mtd -r erase rootfs_data
+				fi
+			fi
+		fi
+		;;
+	*)
+		echo "error $BUTTON action : $ACTION"
+		;;
+esac	
+		

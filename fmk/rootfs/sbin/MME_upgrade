@@ -1,0 +1,102 @@
+#!/bin/sh
+
+export TRANS_MODE=
+export SERVER=
+export USERNAME=
+export PASSWORD=
+export MD5_CSUM=
+export KEEP_CONFIG=0
+
+# parse options
+while [ -n "$1" ]; do 
+	case "$1" in
+		-m) export TRANS_MODE=$2; shift;;
+		-s) export SERVER="$2"; shift;;
+		-u) export USERNAME="$2"; shift;;
+		-p) export PASSWORD="$2"; shift;;
+		-c) export MD5_CSUM="$2"; shift;;
+		-k) export KEEP_CONFIG=1;;
+		-*)
+			echo "Invalid option: $1"
+			exit 1
+		;;
+		*) break;;
+	esac
+	shift;
+done
+
+export FILE="$1"
+export ARGV="$*"
+export ARGC="$#"
+
+[ -z "$ARGV" ] && {
+	cat <<EOF
+Usage: $0 [options] <image file or URL>
+
+Options:
+	-m <mode>    file transfer mode (ftp or http)   
+	-s <server>  server address 
+	-u <username>
+	-p <passwd>
+	-c <md5 csum>
+	-k  
+EOF
+	exit 1
+}
+
+#echo "$0 -m $TRANS_MODE -s $SERVER -u $USERNAME -p $PASSWORD $FILE"
+download_image() {
+	cd /tmp
+	echo "image downloading" > /tmp/upgrade_status
+	case "$TRANS_MODE" in 
+		"0"|"tftp")
+			tftp -g -r $FILE $SERVER
+			;;
+		"1"|"ftp")
+            if [ -n "$USERNAME" -a -n "$PASSWORD" ]; then
+#wget --ftp-user=$USERNAME --ftp-password=$PASSWORD ftp://$SERVER/$FILE
+                wget ftp://"$USERNAME":"$PASSWORD"@$SERVER/$FILE
+            else
+			    wget ftp://$SERVER/$FILE
+            fi
+			;;
+		"2"|"http")
+            if [ -n "$USERNAME" -a -n "$PASSWORD" ]; then
+#                wget --http-user=$USERNAME --http-password=$PASSWORD http://$SERVER/$FILE
+                wget http://"$USERNAME":"$PASSWORD"@$SERVER/$FILE
+            else
+			    wget http://$SERVER/$FILE
+            fi
+			;;
+	esac
+}
+
+verify_image() {
+	local csum=
+	if [ -f /tmp/$FILE ]; then
+		csum=$(md5sum /tmp/$FILE|awk -F ' ' '{print $1}')
+		#echo "csum=$csum"
+		if [ "$csum" = "$MD5_CSUM" ]; then
+			echo "MD5 checksum OK" > /tmp/upgrade_status
+		else
+			echo "MD5 checksum error" > /tmp/upgrade_status
+			exit 1
+		fi 
+	else
+		echo "no image downloaded" > /tmp/upgrade_status
+		exit 1
+	fi
+}
+
+upgrade_image() {
+	if [ "$KEEP_CONFIG" = 1 ]; then
+		sysupgrade -m "/tmp/$FILE"	
+	else
+		sysupgrade -m -n "/tmp/$FILE"
+	fi
+	echo "Upgrade Complete" > /tmp/upgrade_status
+}
+
+download_image
+verify_image
+upgrade_image

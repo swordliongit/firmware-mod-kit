@@ -1,0 +1,65 @@
+<%
+	local sys = require "luci.sys"
+	total = math.ceil(#conn/15)
+%>
+
+<%+header%>
+<script type="text/javascript">
+</script>
+<div class="cbi-content" id="cbi-conntrack">
+	<div class="cbi-section">
+		<div class="cbi-section-bg"><div class="cbi-section-title"><%:Active NAT Connections%></div></div>
+	</div>
+	<div class="cbi-section">
+		<div class="cbi-section-bg">
+		<div class="cbi-table" id="conntrack">
+			<table width="630" border="1" class="cbi-table-list" cellpadding="1" cellspacing="0" align="center">
+				<tr>
+					<th class="cbi-table-title"><%:ID%></th>
+					<th class="cbi-table-title"><%:Protocol%></th>
+					<th class="cbi-table-title"><%:Source%></th>
+					<th class="cbi-table-title"><%:Destination%></th>
+					<th class="cbi-table-title"><%:Timeout%></th>
+				</tr>
+				<% for k,v in pairs (conn) do %>
+				<% if k > (page-1)*15 and k <= page*15 then %>
+				<tr>
+					<td class="cbi-table-field"><%=k%></td>
+					<td class="cbi-table-field"><%=v.layer4:upper()%></td>
+					<td class="cbi-table-field"><%=v.src%>:<%=v.sport%></td>
+					<td class="cbi-table-field"><%=v.dst%>:<%=v.dport%></td>
+					<td class="cbi-table-field"><%=v.timeout%></td>
+				</tr>
+				<% end %>
+				<% end %>
+			</table>
+			<div>&nbsp;</div>
+			<div>&nbsp;<%:Page%>:&nbsp;<%=page%>/<% if total == 0 then %>
+			1
+			<% else %>
+			<%=total%>
+			<% end %>
+			&nbsp;(<%:Total Number%>:<%=#conn%>)</div>
+			<form method="post" action="<%=REQUEST_URI%>">
+			<div class="cbi-pages" aligin="center">
+				<input type="hidden" name="page"  value="<%=pcdata(page)%>"/>
+				<input type="submit" name="refresh" class="cbi-button" value="<%:Refresh%>"/>
+			<% if page ~= 1 then %>
+				<input type="submit" name="first" class="cbi-button" value="<%:First%>"/>
+				<input type="submit" name="pre" class="cbi-button" value="<%:Pre%>"/>
+			<% end %>
+			<% if page ~= total then %>
+				<input type="submit" name="next" class="cbi-button" value="<%:Next%>"/>
+				<input type="submit" name="last" class="cbi-button" value="<%:Last%>"/>
+			<% end %>
+			</div>
+			</form>
+		</div> <!--div cbi-table -->
+			
+		</div>
+		</div>
+	<br />
+</div>
+
+<%+footer%>
+

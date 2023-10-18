@@ -1,0 +1,11 @@
+#!/bin/sh /etc/rc.common
+
+START=50
+
+start() {
+	/usr/lib/userfw.sh start | sh
+}
+
+stop() {
+	/usr/lib/userfw.sh stop | sh
+}

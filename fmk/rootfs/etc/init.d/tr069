@@ -1,0 +1,33 @@
+#!/bin/sh /etc/rc.common
+
+. /etc/functions.sh
+
+START=85
+STOP=92
+
+boot(){
+	local tr069_enable
+	
+	tr069_enable=`uci get remote.tr069_0.enable`
+	if [ "$tr069_enable" != "" -a "$tr069_enable" = "1" ]; then 	
+		tr069 -d /etc/tr069 &
+	fi
+}
+
+start(){
+	local tr069_enable
+
+	tr069_enable=`uci get remote.tr069_0.enable`
+	if [ "$tr069_enable" != "" -a "$tr069_enable" = "1" ]; then 	
+		tr069 -d /etc/tr069 &
+		logger -p 6 "104504 Update the remote management configuration" 
+	fi
+}
+
+stop(){
+	[ -f /var/run/tr069.pid ] && {
+		pid=`cat /var/run/tr069.pid`
+		kill -9 $pid
+		rm -rf /var/run/tr069.pid
+	}	
+}

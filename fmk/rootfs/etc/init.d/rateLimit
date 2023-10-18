@@ -1,0 +1,112 @@
+#!/bin/sh /etc/rc.common
+
+START=71
+STOP=29
+
+
+rate_config() {
+	local cfg="$1"
+	local _iface
+	local _ingress_rate
+	local _egress_rate
+	local ingress_value1
+	local ingress_value2
+	local egress_value1
+	local egress_value2
+	
+	config_get _iface "$cfg" iface
+	config_get _ingress_rate "$cfg" ingress "0"
+	config_get _egress_rate "$cfg" egress "0"
+
+	if [ "$_ingress_rate" -lt "0" ]; then
+		echo "ingress_rate is error!"
+		return
+	fi
+	
+	if [ "$_egress_rate" -lt "0" ]; then
+		echo "egress_rate is error!"
+		return
+	fi
+	
+	#get ingress_rate	
+	if [ "$_ingress_rate" -eq "0" ]; then
+		ingress_value1=0x0
+	else
+		if [ "$_ingress_rate" -gt "16384" ]; then
+		ingress_value1=`expr 16384 / 1024`
+		ingress_value2=`expr $((0x8300)) + $ingress_value1`
+		ingress_value1=`printf 0x%x $ingress_value2`
+		elif [ "$_ingress_rate" -gt "10000" ]; then
+		ingress_value1=`expr $_ingress_rate / 1024`
+		ingress_value2=`expr $((0x8300)) + $ingress_value1`
+		ingress_value1=`printf 0x%x $ingress_value2`
+		elif [ "$_ingress_rate" -gt "1000" ]; then
+		ingress_value1=`expr $_ingress_rate / 100`
+		ingress_value2=`expr $((0x8200)) + $ingress_value1`
+		ingress_value1=`printf 0x%x $ingress_value2`
+		elif [ "$_ingress_rate" -gt "100" ]; then
+		ingress_value1=`expr $_ingress_rate / 10`
+		ingress_value2=`expr $((0x8100)) + $ingress_value1`
+		ingress_value1=`printf 0x%x $ingress_value2`
+		else 
+		ingress_value1=`expr $_ingress_rate`
+		ingress_value2=`expr $((0x8000)) + $ingress_value1`
+		ingress_value1=`printf 0x%x $ingress_value2`
+		fi
+	fi
+	
+	#get egress_rate
+	if [ "$_egress_rate" -eq "0" ]; then
+		egress_value1=0x0
+	else
+		if [ "$_ingress_rate" -gt "16384" ]; then
+		ingress_value1=`expr 16384 / 1024`
+		ingress_value2=`expr $((0x8300)) + $ingress_value1`
+		ingress_value1=`printf 0x%x $ingress_value2`
+		elif [ "$_egress_rate" -gt "10000" ]; then
+		egress_value1=`expr $_egress_rate / 1024`
+		egress_value2=`expr $((0x8300)) + $egress_value1`
+		egress_value1=`printf 0x%x $egress_value2`
+		elif [ "$_egress_rate" -gt "1000" ]; then
+		egress_value1=`expr $_egress_rate / 100`
+		egress_value2=`expr $((0x8200)) + $egress_value1`
+		egress_value1=`printf 0x%x $egress_value2`
+		elif [ "$_egress_rate" -gt "100" ]; then
+		egress_value1=`expr $_egress_rate / 10`
+		egress_value2=`expr $((0x8100)) + $egress_value1`
+		egress_value1=`printf 0x%x $egress_value2`
+		else 
+		egress_value1=`expr $_egress_rate`
+		egress_value2=`expr $((0x8000)) + $egress_value1`
+		egress_value1=`printf 0x%x $egress_value2`
+		fi
+	fi
+	
+	if [ $_iface = "WAN" ]; then
+		#echo "WAN"
+		mknod /dev/rt_rdm0 c 253 0
+		reg s 0xb0110000
+
+		#echo $ingress_value1
+		reg w 0x1080 $ingress_value1
+		
+		#echo $egress_value1
+		reg w 0x1040 $egress_value1
+
+		rm /dev/rt_rdm0
+	else
+		echo "unknown port"
+	fi	
+
+}
+
+start(){
+	echo "start rate_limit"
+	config_load rateLimit
+	config_foreach rate_config RateLimit
+}
+
+stop(){
+	echo "stop rate_limit"
+}
+

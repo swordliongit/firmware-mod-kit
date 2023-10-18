@@ -1,0 +1,11 @@
+/lib/modules/2.6.32.27/xt_time.ko
+/lib/modules/2.6.32.27/xt_webstr.ko
+/lib/modules/2.6.32.27/xt_CLASSIFY.ko
+/lib/modules/2.6.32.27/xt_DSCP.ko
+/etc/modules.d/45-ipt-ipopt
+/lib/modules/2.6.32.27/xt_dscp.ko
+/lib/modules/2.6.32.27/xt_MARK.ko
+/lib/modules/2.6.32.27/xt_tcpmss.ko
+/lib/modules/2.6.32.27/xt_mark.ko
+/lib/modules/2.6.32.27/xt_length.ko
+/lib/modules/2.6.32.27/xt_statistic.ko

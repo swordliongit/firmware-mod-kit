@@ -1,0 +1,487 @@
+#!/bin/sh /etc/rc.common
+
+. /etc/functions.sh
+
+START=41
+STOP=91
+
+# apply wanctl by default
+local WanctlApp=0 
+local LanBindVlan=""
+local GLOBAL_WANID=0
+local wanctl_conf_file="/var/.wanctl/wanctl.conf"
+#local wanctl_conftmp_file="/tmp/wanctl.conf"
+local wanctl_ucitmp_file="/tmp/wanctl.tmpuci.conf"
+local wanctl_protmp_file="/tmp/wanctl.tmppro.conf"
+#local DEBUG="echo"
+local DEBUG=""
+
+wanctl_init(){
+	ifconfig eth1 up
+	#echo 0 > /proc/sys/kernel/printk
+#	ifconfig lo up
+#	ifconfig eth0 hw ether 00:0C:43:28:80:FA up
+
+#	brctl addbr br-lan
+#	brctl addbr br1
+	ifconfig br1 up
+	ifconfig eth0 up
+#	ifconfig br-lan 192.168.1.1 up
+	
+	brctl addif br-lan eth1_0
+	brctl addif br-lan eth1_1
+	brctl addif br-lan eth1_2
+	brctl addif br-lan eth1_3
+	brctl addif br-lan ra0 
+	brctl addif br-lan ra1 
+	brctl addif br-lan ra2 
+	brctl addif br-lan ra3 
+	
+	#create nat chain
+	iptables -t nat -N SNAT_MASQ
+	iptables -t nat -A POSTROUTING -j SNAT_MASQ
+	
+	#start daemon
+	wand &
+}
+
+wanctl_conf_handle(){
+
+	local WanID
+	local VlanID
+	local Cos
+	local Nat   
+	local Mode 
+	local Protocol
+	local Workmode
+	local IP
+	local Netmask
+	local Gateway
+	local Dns1
+	local Dns2
+	local UserName
+	local Passwd
+	local ProxyNum
+	local ServerName
+	local DialWay
+	local MTU
+	local Servicemode
+	local PortMap
+	local Option60 
+	local Option60s
+	local Option125 
+	local Option125s 
+	local MultiVlan
+	local VlanBaseLan1
+	local VlanBaseLan2
+	local VlanBaseLan3
+	local VlanBaseLan4
+	local VlanBaseWlan1
+	local VlanBaseWlan2
+	local VlanBaseWlan3
+	local VlanBaseWlan4
+	local PassDhcp
+	
+
+#	config_get WanID $1  WanID
+	config_get VlanID $1  VlanID
+	config_get Cos $1  Cos
+	config_get Nat    $1  Nat
+	config_get Mode   $1  Mode
+	config_get Protocol $1  Protocol
+	config_get Workmode $1  Workmode
+	config_get IP       $1  IP
+	config_get Netmask  $1  Netmask
+	config_get Gateway  $1  Gateway
+	config_get Dns1     $1  Dns1
+	config_get Dns2     $1  Dns2
+	config_get UserName $1  UserName
+	config_get Passwd $1  Passwd
+	config_get ProxyNum $1  ProxyNum
+	config_get ServerName $1  ServerName
+	config_get DialWay    $1  DialWay
+	config_get IdleTime   $1  IdleTime
+	config_get MTU        $1  MTU
+	config_get Servicemode $1  Servicemode
+	config_get PortMap     $1  PortMap
+# option need to check
+	config_get Option60s   $1  Option60 
+		Option60=`echo $Option60s | sed 's/[a-zA-Z0-9]*,0,[a-zA-Z0-9]*,[a-zA-Z0-9]*,[a-zA-Z0-9]*//g'`
+		Option60=`echo $Option60 | sed 's/[a-zA-Z0-9]*,1,[a-zA-Z0-9]*,\([a-zA-Z0-9]*,[a-zA-Z0-9]*\)/\1/g'`
+		Option60=`echo $Option60 | sed 's/  */,/g'` 
+	
+	config_get Option125s  $1  Option125
+		Option125=`echo $Option125s | sed 's/[a-zA-Z0-9]*,0,[a-zA-Z0-9]*//g'`
+		Option125=`echo $Option125 | sed 's/[a-zA-Z0-9]*,1,\([a-zA-Z0-9]*\)/\1/g'`
+		Option125=`echo $Option125 | sed 's/  */,/g'` 
+	config_get  MultiVlan $1 MultiVlan 	
+
+	config_get VlanBaseLan1 $1  VlanBaseLan1 ""
+	config_get VlanBaseLan2 $1  VlanBaseLan2 ""
+	config_get VlanBaseLan3 $1  VlanBaseLan3 ""
+	config_get VlanBaseLan4 $1  VlanBaseLan4 ""
+	config_get VlanBaseWlan1 $1 VlanBaseWlan1 ""
+	config_get VlanBaseWlan2 $1 VlanBaseWlan2 ""
+	config_get VlanBaseWlan3 $1 VlanBaseWlan3 ""
+	config_get VlanBaseWlan4 $1 VlanBaseWlan4 ""
+	LanBindVlan="$(echo $VlanBaseLan1 $VlanBaseLan2 $VlanBaseLan3 $VlanBaseLan4 $VlanBaseWlan1 $VlanBaseWlan2 $VlanBaseWlan3 $VlanBaseWlan4 | sed 's/ /;/g')"
+	
+#	local portmaptbl=($PortMap)
+	local lan1=0
+	local lan2=0
+	local lan3=0
+	local lan4=0
+	local wlan1=0
+	local wlan2=0
+	local wlan3=0
+	local wlan4=0
+	
+	for lan in $(echo $PortMap) 
+	do 	
+		case "$lan" in
+			lan1 ) lan1=1 ;;
+			lan2 ) lan2=1 ;;
+			lan3 ) lan3=1 ;;
+			lan4 ) lan4=1 ;;
+			wlan1 ) wlan1=1 ;;
+			wlan2 ) wlan2=1 ;;
+			wlan3 ) wlan3=1 ;;
+			wlan4 ) wlan4=1 ;;
+		esac
+	done
+	
+	PortMap=${lan1}${lan2}${lan3}${lan4}${wlan1}${wlan2}${wlan3}${wlan4}
+#	PortMap=${lan1}${lan2}${lan3}${wlan1}${wlan2}
+	
+	#default the value of PassDhcp is 0 disable
+	config_get PassDhcp $1  PassDhcp '0'
+	 
+
+#	[ -z "$WanID" ] && GLOBAL_WANID=$(($GLOBAL_WANID + 1))
+#	[ -z "$WanID" ] && WanID=$GLOBAL_WANID
+# WanctlApp	[ -z "$VlanID" ] &&   VlanID=-1
+	WanctlApp=1
+ 	[ -z "$VlanID" ] &&  {
+		  VlanID=-1
+		  WanctlApp=0
+		}
+	[ -z "$Cos" ] &&   Cos=0
+	[ -z "$Nat" ] &&   Nat=0
+	[ -z "$Mode" ] &&   Mode=0
+	[ -z "$Protocol" ] &&   Protocol=0
+	[ -z "$Workmode" ] &&   Workmode=0
+	[ -z "$IP" ] &&   IP=""
+	[ -z "$Netmask" ] &&   Netmask=""
+	[ -z "$Gateway" ] &&   Gateway=""
+	[ -z "$Dns1" ] &&   Dns1=""
+	[ -z "$Dns2" ] &&   Dns2=""
+	[ -z "$UserName" ] &&   UserName=""
+	[ -z "$Passwd" ] &&   Passwd=""
+	[ -z "$ProxyNum" ] &&   ProxyNum=0
+	[ -z "$ServerName" -o "$ServerName" = "NULL" ] &&   ServerName=""
+	[ -z "$DialWay" ] &&   DialWay=0
+	[ -z "$IdleTime" ] &&   IdleTime=0
+#	[ -z "$MTU" ] &&   MTU=1500
+	if [ -z "$MTU" ] ;then
+		if [ "$Mode" = "0" ] ;then
+			MTU=0
+		else
+			MTU=1480
+		fi
+	fi
+	[ -z "$Servicemode" ] &&   Servicemode=0
+	[ -z "$PortMap" ] &&   PortMap="00000000"
+#	[ -z "$PortMap" ] &&   PortMap="00000"
+	[ -z "$Option60" ] &&   Option60=""
+	[ -z "$Option125" ] &&   Option125=""
+	[ -z "$MultiVlan" ] &&  MultiVlan=-1
+
+# wxb add for proto and Workmode depend by Mode ,support tr069
+	if [ $Mode = 0 ] ;then
+	   # bridge mode
+		Protocol=2
+		Workmode=0
+		if [ $Servicemode -ne 0 ] ; then
+			PassDhcp=0	
+		fi
+	elif [ $Workmode -le "1"  ];then
+	   #dhcp and static
+		Protocol=1
+		PassDhcp=0	
+	else
+		Protocol=0
+		PassDhcp=0	
+	fi
+	echo "VlanID=$VlanID Cos=$Cos Nat=$Nat Mode=$Mode Protocol=$Protocol Workmode=$Workmode IP=\"$IP\" Netmask=\"$Netmask\" Gateway=\"$Gateway\" Dns1=\"$Dns1\" Dns2=\"$Dns2\" UserName=\"$UserName\" Passwd=\"$Passwd\" ProxyNum=$ProxyNum ServerName=\"$ServerName\" DialWay=$DialWay IdleTime=$IdleTime MTU=$MTU Servicemode=$Servicemode PortMap=\"$PortMap\" Option60=\"$Option60\" Option125=\"$Option125\" MultiVlan=$MultiVlan" LanBindVlan=\"$LanBindVlan\" PassDhcp=${PassDhcp} >> $wanctl_ucitmp_file 
+}
+# use file to descript now wanctl running message
+wanlink_proto_handle(){
+	local tmpline
+	[ -f $wanctl_protmp_file ] && rm $wanctl_protmp_file
+	cat <> $wanctl_protmp_file
+
+	cat $wanctl_conf_file | while read line
+	do
+		[ "$line" = "<SystemInfo>" ] && continue
+		[ "$line" = "</SystemInfo>" ] && continue
+		[ "$line" = "<WanInfo>" ] && continue
+		[ "$line" = "</WanInfo>" ] && continue
+
+		line=${line#*<}
+#		line=${line%/>*}
+		tmpline=${line%/>*}
+		
+#		reserve the WanID message
+#		tmpline=${line#* }			
+#		tmpline=${tmpline% }
+		
+		echo "$tmpline" >> $wanctl_protmp_file
+	done	
+}
+
+# parament 1 -> wanctl.conf string <str>,need parse
+wanlink_del(){
+	local WanID
+	#parse the string
+	local confstr=`echo $1`
+	local WanID=`echo $confstr | awk '{print $1}'`
+	echo "delcmd" $confstr
+#	echo "WanID" = $WanID	
+	WanID=${WanID#WanID}
+	
+	echo "wanctl" del $WanID	
+	[ -z $WanID ] && return -1
+
+	#call wanctl commit to set
+	local cmdstr="-t del -W $WanID"
+#	echo "wanctl" $cmdstr
+	$DEBUG wanctl $cmdstr
+}
+# parament ->uci config section
+wanlink_add(){
+	local confstr=`echo $*`
+	local wcmd=""
+	local wcmdstr
+
+	echo "addcmd" $confstr
+	#use uci config_get to get parament
+	local VlanID=${1#*=}
+	local Cos=${2#*=}
+	local Nat=${3#*=}
+	local Mode=${4#*=}
+	local Protocol=${5#*=}
+	local Workmode=${6#*=}
+	local IP=${7#*=\"}
+		IP=${IP%\"}
+	local Netmask=${8#*=\"}
+		Netmask=${Netmask%\"}
+	local Gateway=${9#*=\"}
+		Gateway=${Gateway%\"}
+	local Dns1=${10#*=\"}
+		Dns1=${Dns1%\"}
+	local Dns2=${11#*=\"}
+		Dns2=${Dns2%\"}
+	local UserName=${12#*=\"}
+		UserName=${UserName%\"}
+	local Passwd=${13#*=\"}
+		Passwd=${Passwd%\"}
+	local ProxyNum=${14#*=}
+	local ServerName=${15#*=\"}
+		ServerName=${ServerName%\"}
+	local DialWay=${16#*=}
+	local IdleTime=${17#*=}
+	local MTU=${18#*=}
+	local Servicemode=${19#*=}
+	local PortMap=${20#*=\"}
+	      PortMap=${PortMap%\"}
+	local Option60=${21#*=\"}
+	      Option60=${Option60%\"}
+	local Option125=${22#*=\"}
+	      Option125=${Option125%\"}
+	local MultiVlan=${23#*=}
+	local LanBindVlan=${24#*=\"}
+	      LanBindVlan=${LanBindVlan%\"}
+	      LanBindVlan="$(echo $LanBindVlan | sed 's/;/ /g')"
+	local PassDhcp=${25#*=}
+
+	#commit the wanctl
+	[ "$LanBindVlan" != "" ] && {
+		for para in $(echo $LanBindVlan) 
+		do
+			[ $para != "" ] && {
+			wcmdstr="$wcmdstr -P $para" 
+			}
+		done
+	   }
+	#vlan message
+
+	[ $VlanID -ge 1 -a $VlanID -le 4094 ] && wcmdstr="$wcmdstr -v $VlanID"
+	[ $Cos -ge 1 -a $Cos -le 7 ] && wcmdstr="$wcmdstr -q $Cos"
+	wcmdstr="$wcmdstr -s $Servicemode "		
+	[ $PortMap != "00000000" ] && wcmdstr="$wcmdstr -p $PortMap"
+#	[ $PortMap != "00000" ] && wcmdstr="$wcmdstr -p $PortMap"
+	
+	[ $MultiVlan -ge 1 -a $MultiVlan -le 4094 ] && wcmdstr="$wcmdstr --multivlan $MultiVlan"
+
+	if [ $Mode = "0" ]	
+	then
+		#bridge
+		wcmd="bridge"
+		if [ $Servicemode -lt 0 -o $Servicemode -gt 1 ]   
+		then
+			echo "add $wcmd error ! Servicemode = $Servicemode"
+			return -1 
+		fi
+		# internet bridge support dhcp passthrough
+		if [ $Servicemode -eq 0 ] ; then
+			wcmdstr="${wcmdstr} --passdhcp $PassDhcp"	
+		fi
+	#	wcmdstr="$wcmdstr -s $Servicemode -p $PortMap"
+	else
+	
+		if [ $Servicemode -lt "0" -o $Servicemode -gt "7" ]   
+		then
+			echo "add route mode error ! Servicemode = $Servicemode"
+			return -1 
+		fi
+
+		[ -n $MTU ] && wcmdstr="$wcmdstr -m $MTU"
+		[ "$Nat" = "1" ] && wcmdstr="$wcmdstr -n"
+		#route
+		if [ $Workmode = "0" ] 
+		then
+			# dhcp
+			wcmd="dhcp"
+		#	option 60 option 125
+			[ "$Option60" != "" ] && wcmdstr="$wcmdstr --dhcp-option60 $Option60" 
+			[ "$Option125" != "" ] && wcmdstr="$wcmdstr --dhcp-option125 $Option125" 
+		elif [ $Workmode = "1" ]
+		then
+			# static ip mode
+			wcmd="static"
+			[ "$Dns1" != "" ] && wcmdstr="$wcmdstr --dns1 $Dns1"
+			[ "$Dns2" != "" ] && wcmdstr="$wcmdstr --dns2 $Dns2"
+			 
+			wcmdstr="$wcmdstr -i $IP -N $Netmask -g $Gateway"
+		elif [ $Workmode = "2" ]
+		then
+			#pppoe
+			wcmd="ppp"
+			[ $ServerName != "" ] && wcmdstr="$wcmdstr -S $ServerName"
+
+			wcmdstr="$wcmdstr --username $UserName --password $Passwd -D $DialWay -I $IdleTime"
+		elif [ $Workmode = "3" ]
+		then
+			#pppoeproxy
+			wcmd="pppproxy"
+			[ $ServerName != "" ] && wcmdstr="$wcmdstr -S $ServerName"
+
+			if [ $ProxyNum -lt 1 -o $ProxyNum -gt 8 ]   
+			then
+				echo "add $wcmd error ! ProxyNum= $ProxyNum"
+				return -1 
+			fi
+			wcmdstr="$wcmdstr --proxynum $ProxyNum --username $UserName --password $Passwd -D $DialWay -I $IdleTime"
+		elif [ $Workmode = "4" ]
+		then
+			#pppoemix
+			wcmd="pppmix"
+			[ $ServerName != ""  ] && wcmdstr="$wcmdstr -S $ServerName"
+
+			wcmdstr="$wcmdstr --username $UserName --password $Passwd -D $DialWay -I $IdleTime"
+		else
+			echo "error add wanctl commit"
+			return -1
+		fi
+	fi
+#	echo "wanctl" "-t $wcmd" "$wcmdstr"
+	local strcmd="-t $wcmd $wcmdstr"
+	#echo "wanctl" $strcmd
+#	wanctl $wcmd $wcmdstr
+	$DEBUG wanctl $strcmd 
+}
+wanlink_update(){
+		
+	#use file of uci create and xml config	
+	if [ $1 = "1" ]
+	then
+	# update the when configuration change
+	[ -f  $wanctl_ucitmp_file ] && rm $wanctl_ucitmp_file  
+	cat <> $wanctl_ucitmp_file
+	
+	config_load wanctl
+	config_foreach  wanctl_conf_handle wanlink
+	sed -i 's/  */ /g' $wanctl_ucitmp_file
+	else
+		# update when run kill configuration
+		cat <> $wanctl_ucitmp_file
+	fi	
+	#get the protocol running configuration
+	wanlink_proto_handle		
+	sed -i 's/  */ /g' $wanctl_protmp_file
+	
+	#compare the sting to  file string look
+#	for line in `cat $wanctl_conf_file `
+	cat $wanctl_protmp_file | while read line
+	do
+		local tmpline
+	
+		tmpline=${line#* }			
+		tmpline=${tmpline% }
+
+#		for uciline in `cat $wanctl_ucitmp_file` 
+		cat $wanctl_ucitmp_file | while read uciline 
+		do
+			if [ "$tmpline" = "$uciline" ]
+			then
+				#have exist config delete it 
+				sed -i '/'"$uciline"'/d'  $wanctl_ucitmp_file
+				sed -i '/'"$line"'/d'  $wanctl_protmp_file
+			fi
+		done 
+	done
+
+	# not app config change ,because the vlan not set
+	if [ $WanctlApp -ne "1" ]
+	then
+		[ -f  $wanctl_ucitmp_file ] && rm $wanctl_ucitmp_file
+		[ -f  $wanctl_protmp_file ] && rm $wanctl_protmp_file
+		return 0
+	fi 
+
+	cat $wanctl_protmp_file | while read tmpline
+	do
+		wanlink_del "$tmpline"
+	done
+	#config the change uci config
+#	for line in `cat $wanctl_ucitmp_file `
+	cat $wanctl_ucitmp_file | while read line 
+	do
+		#pare line ,get match flag ,not get ,set needconf=1
+		wanlink_add $line
+	done
+	[ -f  $wanctl_ucitmp_file ] && rm $wanctl_ucitmp_file
+	[ -f  $wanctl_protmp_file ] && rm $wanctl_protmp_file
+}
+
+start(){
+	if [ -f $wanctl_conf_file ]
+	then
+		wanlink_update 1
+	else
+		mkdir -p /var/.wanctl/
+		cp /etc/wanctl/wanctl.conf.template $wanctl_conf_file
+		
+		wanctl_init
+
+		wanlink_update 1
+
+		#open the forward
+		echo 1 > /proc/sys/net/ipv4/ip_forward
+	fi
+}
+stop(){
+	echo "stop wand, not support now"
+#	killall wand
+#	wanlink_update 0
+}

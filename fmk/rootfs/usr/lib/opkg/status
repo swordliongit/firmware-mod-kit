@@ -1,0 +1,976 @@
+Package: luci-lib-sys
+Version: 0.10+svn7109-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: libuci-lua
+Version: 2011-01-19.1-1
+Depends: libuci, liblua
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: eocmod
+Version: 1
+Depends: libuci
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875328
+
+Package: libc
+Version: 0.9.30.1-43.35
+Provides:
+Status: install hold installed
+Essential: yes
+Architecture: ramips
+Installed-Time: 1540875323
+
+Package: kmod-ebtables
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: ntpclient
+Version: 2007_365-4
+Depends: librt
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/config/ntpclient 6d4e7f5ccc7f007b3831651197708b89
+Installed-Time: 1540875341
+
+Package: opkg
+Version: 576-2
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/opkg.conf 60139f7a899764ddb7de1de93830b04b
+Installed-Time: 1540875342
+
+Package: iptables-mod-extra
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-extra
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: kmod-textsearch
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: eocsdk
+Version: 3
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875329
+
+Package: ip
+Version: 2.6.35-3
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/iproute2/rt_tables a1313318d6778fe6b8c680248ef5a463
+Installed-Time: 1540875329
+
+Package: kmod-ipt-imq
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875333
+
+Package: libpthread
+Version: 0.9.30.1-43.35
+Depends: librt
+Provides:
+Status: install hold installed
+Essential: yes
+Architecture: ramips
+Installed-Time: 1540875323
+
+Package: luci-mod-admin-core
+Version: 0.10+svn7109-1
+Depends: luci-lib-web, luci-i18n-english
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: busybox
+Version: 1.17.3-2
+Provides:
+Status: install user installed
+Essential: yes
+Architecture: ramips
+Installed-Time: 1540875323
+
+Package: kmod-nfnetlink
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: swconfig
+Version: 9
+Depends: libuci, libnl-tiny
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875345
+
+Package: ebtables
+Version: 2.0.9-2-1
+Depends: kmod-ebtables
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875328
+
+Package: libiwinfo
+Version: 18.2
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: kmod-ipt-filter
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core, kmod-textsearch
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875333
+
+Package: luci-lib-lmo
+Version: 0.10+svn7109-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: luci-theme-openwrt
+Version: 0.10+svn7109-1
+Depends: luci-theme-base
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: kmod-gre
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: kmod-pppoe
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ppp
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: luci-mod-failsafe
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: raAted
+Version: 1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875344
+
+Package: kmod-ipt-conntrack
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: base-files
+Version: 43.35-r18580
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/hosts 89f616defd47b22702e3158ca7e70487
+ /etc/inittab 517ddcd3176f3fb036d66b9ebea5ed38
+ /etc/group 4a116d818b2f49e14939d581ec786de1
+ /etc/passwd 9b86bc0e99a8c8d47b027fca2fa5e39d
+ /etc/profile d514cdb294e40adfb7a1e4943e505b60
+ /etc/shells 725ba6f40dff0612f61ecd3f171bb3e1
+ /etc/sysctl.conf 69d8daacbeb3dea22d3c1d7422bcd1b7
+ /etc/rc.local 6f8bfdaf36d3ec4aa9be6e96fa61d32b
+ /etc/sysupgrade.conf f91aef484370cefee501d64b5725c1d2
+ /etc/config/system 55dc72dad25a4cf115375355e9a041f4
+ /etc/config/usercfg b7a2473f39edfbcef2d0ce7f695c1a56
+ /etc/config/portcfg 7316d46ac1efa9e5811236ca8e080efe
+ /etc/config/mmecfg f821b61a3dd9f8c92b13c4e5ca53fd93
+ /etc/config/mmecfg f821b61a3dd9f8c92b13c4e5ca53fd93
+ /etc/config/portcfg 7316d46ac1efa9e5811236ca8e080efe
+ /etc/config/system 55dc72dad25a4cf115375355e9a041f4
+ /etc/config/usercfg b7a2473f39edfbcef2d0ce7f695c1a56
+Installed-Time: 1540875322
+
+Package: kmod-input-core
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: ddns-scripts
+Version: 1.0.0-13
+Provides:
+Status: install user installed
+Architecture: all
+Conffiles:
+ /etc/config/ddns f65b32770b5c48c8864757b4db8ea580
+Installed-Time: 1540875326
+
+Package: uboot-envtools
+Version: 20081215-2
+Depends: zlib
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875345
+
+Package: dnsmasq
+Version: 2.55-6
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/config/dhcp 9c5409cadb2a80aa42f3e4908688c4a2
+ /etc/dnsmasq.conf 7cf378e58d3fe5db31f4116a16c15c61
+Installed-Time: 1540875326
+
+Package: luci-sgi-cgi
+Version: 0.10+svn7109-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: tr069
+Version: 1
+Depends: libopenssl, libpthread, libuci
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875345
+
+Package: kmod-RalinkAP
+Version: 2.6.32.27+2.7.1.5-0
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875344
+
+Package: kmod-pcm_ctrl
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875342
+
+Package: qostool
+Version: 1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875343
+
+Package: kmod-crc-ccitt
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: rt_reg
+Version: r4210-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875322
+
+Package: iptables-mod-conntrack
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-conntrack
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: luci-app-ddns
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core, ddns-scripts
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: iptables-mod-iprange
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-iprange
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: firewall
+Version: 2-21
+Depends: iptables, iptables-mod-conntrack, iptables-mod-nat
+Provides:
+Status: install user installed
+Architecture: all
+Conffiles:
+ /etc/config/firewall a05dd4561c6886c1e86446549b982a2a
+Installed-Time: 1540875329
+
+Package: luci-app-ntpc
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core, ntpclient
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: luci-app-firewall
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core, firewall
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: kmod-ipt-conntrack-extra
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core, kmod-ipt-conntrack
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: luci-lib-ipkg
+Version: 0.10+svn7109-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: luci-theme-r3000_base
+Version: 0.10+svn7109-1
+Depends: luci-theme-base
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: tc
+Version: 2.6.35-3
+Depends: kmod-sched
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875329
+
+Package: libuci
+Version: 2011-01-19.1-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: liblua
+Version: 5.1.4-7
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875336
+
+Package: libcyassl
+Version: 1.4.0-2
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875324
+
+Package: luci-mod-admin-customer
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: kmod-ipt-extra
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: iptables-mod-ipopt
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-ipopt
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: kmod-rdm
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875345
+
+Package: uci
+Version: 2011-01-19.1-1
+Depends: libuci
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: lua
+Version: 5.1.4-7
+Depends: liblua
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875336
+
+Package: libiptc
+Version: 1.4.10-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: kmod-ebtables-ipv4
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ebtables
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: luci-ssl
+Version: 0.10+svn7109-1
+Depends: uhttpd, uhttpd-mod-tls, px5g, luci-mod-admin-full, luci-theme-openwrt, luci-app-firewall, libiwinfo
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: dropbear
+Version: 0.53.1-6
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/dropbear/dropbear_rsa_host_key d41d8cd98f00b204e9800998ecf8427e
+ /etc/dropbear/dropbear_dss_host_key d41d8cd98f00b204e9800998ecf8427e
+ /etc/config/dropbear 4ff9c827d4f95ca5082a5520c03e1419
+Installed-Time: 1540875326
+
+Package: kmod-nls-utf8
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-nls-base
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: kmod-crypto-aes
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-crypto-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: mtd
+Version: 13
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: kmod-crypto-core
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: luci-theme-base
+Version: 0.10+svn7109-1
+Depends: luci-lib-web
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: kmod-sched
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: ebtables-utils
+Version: 2.0.9-2-1
+Depends: kmod-ebtables
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875328
+
+Package: libgcc
+Version: 4.3.3+cs-43.35
+Provides:
+Status: install hold installed
+Essential: yes
+Architecture: ramips
+Installed-Time: 1540875323
+
+Package: luci-sgi-uhttpd
+Version: 0.10+svn7109-1
+Depends: uhttpd, uhttpd-mod-lua
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: pppoe
+Version: 2.4.4-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875343
+
+Package: luci-mod-admin-full
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core, luci-lib-ipkg
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: kmod-leds-gpio
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: kmod-input-polldev
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-input-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: luci-lib-web
+Version: 0.10+svn7109-1
+Depends: luci-lib-core, luci-lib-sys, luci-lib-nixio, luci-lib-core, luci-sgi-cgi, luci-lib-lmo
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/config/luci 758efab8e3ed396bcd9f19b9acf94c9b
+Installed-Time: 1540875340
+
+Package: librt
+Version: 0.9.30.1-43.35
+Provides:
+Status: install hold installed
+Essential: yes
+Architecture: ramips
+Installed-Time: 1540875323
+
+Package: RalinkAP-util
+Version: 2.7.1.5-0
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/Wireless/RT2860AP/RT2860AP.dat 27e8cebe7291044f00315730c47b7db9
+Installed-Time: 1540875344
+
+Package: kmod-ralink_gdma
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875343
+
+Package: iptables
+Version: 1.4.10-1
+Depends: kmod-ipt-core, libiptc, libxtables
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: iptables-mod-filter
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-filter
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: hotplug2
+Version: 1.0-beta-3
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/hotplug2.rules 84f0b3212db912388714279f159709e2
+Installed-Time: 1540875329
+
+Package: kmod-ipt-nathelper
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core, kmod-ipt-nat
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875333
+
+Package: kmod-nf-conntrack-netlink
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-nfnetlink, kmod-ipt-conntrack
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: wanctl
+Version: 1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: kmod-ipt-core
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: libpcap
+Version: 1.0.0-2
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875336
+
+Package: kmod-rt_rdm
+Version: 2.6.32.27+r4210-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875322
+
+Package: kmod-input-gpio-buttons
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-input-polldev
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: kmod-ppp
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-crc-ccitt
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875334
+
+Package: uhttpd-mod-lua
+Version: 28.1
+Depends: uhttpd, liblua
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: igmpproxy
+Version: 0.1-2
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/igmpproxy.conf 7f4b5560693181fff8b9fd7549f5a1f6
+Installed-Time: 1540875329
+
+Package: uhttpd
+Version: 28.1
+Provides:
+Status: install user installed
+Architecture: ramips
+Conffiles:
+ /etc/config/uhttpd f2c42a9bc95d36416aa97502d3edf7d6
+Installed-Time: 1540875346
+
+Package: iptables-mod-conntrack-extra
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-conntrack-extra
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: libxtables
+Version: 1.4.10-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: rate_limit
+Version: 1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875344
+
+Package: zlib
+Version: 1.2.3-5
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875347
+
+Package: luci-app-userfw
+Version: 0.10+svn7109-1
+Depends: luci-mod-admin-core, PACKAGE_luci-app-userfw
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: luci-lib-nixio
+Version: 0.10+svn7109-1
+Depends: luci-lib-core
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: luci-i18n-chinese
+Version: 0.10+svn7109-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: crda
+Version: 1.1.1-1
+Depends: libnl-tiny
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875324
+
+Package: kmod-ipt-ipopt
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875333
+
+Package: kmod-ipt-nathelper-extra
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core, kmod-ipt-nat, kmod-textsearch
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875333
+
+Package: udevtrigger
+Version: 106-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: luci
+Version: 0.10+svn7109-1
+Depends: uhttpd, luci-mod-admin-full, luci-theme-openwrt, luci-app-firewall, libiwinfo
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: iptables-mod-nat
+Version: 1.4.10-1
+Depends: iptables, kmod-ipt-nat
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875330
+
+Package: kernel
+Version: 2.6.32.27-1
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875331
+
+Package: libnl-tiny
+Version: 0.1-2.1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875336
+
+Package: px5g
+Version: 1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875343
+
+Package: kmod-button-hotplug
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1)
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875324
+
+Package: kmod-mppe
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ppp, kmod-crypto-core, kmod-crypto-arc4, kmod-crypto-sha1
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875335
+
+Package: luci-i18n-english
+Version: 0.10+svn7109-1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875341
+
+Package: pkt_fwd_ctl
+Version: 1
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875343
+
+Package: uhttpd-mod-tls
+Version: 28.1
+Depends: uhttpd, libcyassl
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: wireless-tools
+Version: 29-4
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875346
+
+Package: kmod-crypto-arc4
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-crypto-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: kmod-crypto-sha1
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-crypto-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875332
+
+Package: libopenssl
+Version: 0.9.8x-1
+Depends: zlib
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875342
+
+Package: luci-lib-core
+Version: 0.10+svn7109-1
+Depends: lua, libuci-lua
+Provides:
+Status: install user installed
+Architecture: ramips
+Installed-Time: 1540875340
+
+Package: kmod-ipt-nat
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core, kmod-ipt-conntrack
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875333
+
+Package: kmod-ipt-iprange
+Version: 2.6.32.27-1
+Depends: kernel (= 2.6.32.27-1), kmod-ipt-core
+Provides:
+Status: install hold installed
+Architecture: ramips
+Installed-Time: 1540875333
+

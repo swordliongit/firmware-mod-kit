@@ -1,0 +1,3 @@
+/lib/modules/2.6.32.27/imq.ko
+/lib/modules/2.6.32.27/xt_IMQ.ko
+/etc/modules.d/46-ipt-imq

@@ -1,0 +1,3 @@
+
+config 'mmecfg' 'common'
+        option 'firstOnlineUnderWeiKuan' 'Yes'

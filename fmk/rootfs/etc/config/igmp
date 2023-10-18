@@ -1,0 +1,5 @@
+
+config 'IPTV' 'igmp'
+        option 'IGMPEnable' 'true'
+        option 'ProxyEnable' 'true'
+        option 'SnoopingEnable' 'false'

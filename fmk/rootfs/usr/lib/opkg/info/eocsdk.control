@@ -1,0 +1,13 @@
+Package: eocsdk
+Version: 3
+Depends: 
+Provides: 
+Source: package/eocsdk
+Section: eocsdk
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 83156
+Description:  Intellon EOC sdk application

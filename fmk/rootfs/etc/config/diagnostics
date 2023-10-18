@@ -1,0 +1,9 @@
+
+config 'IPPing' 'IPPing_0'
+        option 'DiagnosticsState' 'None'
+        option 'NumberOfRepetitions' '4'
+        option 'SuccessCount' '0'
+        option 'FailureCount' '0'
+        option 'AverageResponseTime' '0'
+        option 'MinimumResponseTime' '0'
+        option 'MaximumResponseTime' '0'

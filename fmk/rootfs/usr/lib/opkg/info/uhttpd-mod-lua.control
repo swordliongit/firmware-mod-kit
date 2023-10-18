@@ -1,0 +1,13 @@
+Package: uhttpd-mod-lua
+Version: 28.1
+Depends: uhttpd, liblua
+Provides: 
+Source: package/uhttpd
+Section: net
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: Jo-Philipp Wich <xm@subsignal.org>
+Architecture: ramips
+Installed-Size: 8752
+Description:  The Lua plugin adds a CGI-like Lua runtime interface to uHTTPd.

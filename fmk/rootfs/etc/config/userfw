@@ -1,0 +1,5 @@
+config protoBanned
+	option http_wan 0
+	option icmp_wan 1 
+	option telnet_wan 1
+	option ssh_wan 1

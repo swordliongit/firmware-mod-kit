@@ -1,0 +1,16 @@
+config system 'system_0'
+	option hostname ANS5003WV-V2
+	option timezone	UTC
+	option log_enable 1
+	option log_level 3
+
+config rdate 'rdate_0'
+	option interface	wan
+
+config led wlan_led
+    option name WLAN
+    option sysfs rl_ans5004:green:wlan
+    option trigger netdev
+    option dev wifi0
+    option mode 'link tx rx'
+    option interval 300

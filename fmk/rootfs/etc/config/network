@@ -1,0 +1,26 @@
+
+config 'interface' 'loopback'
+        option 'ifname' 'lo'
+        option 'proto' 'static'
+        option 'ipaddr' '127.0.0.1'
+        option 'netmask' '255.0.0.0'
+
+config 'interface' 'lan'
+        option 'ifname' 'eth1_0.5 eth1_1 eth1_2 eth1_3 ra0 ra1 ra2'
+        option 'type' 'bridge'
+        option 'proto' 'dhcp'
+
+config 'switch' 'switch_0'
+        option 'name' 'switch0'
+        option 'reset' '1'
+        option 'enable_vlan' '1'
+
+config 'switch_vlan' 'switch_vlan_1'
+        option 'device' 'switch0'
+        option 'vlan' '1'
+        option 'ports' '0 1 2 3 4 6'
+
+config 'switch_vlan' 'switch_vlan_2'
+        option 'device' 'switch0'
+        option 'vlan' '2'
+        option 'ports' '5 6'

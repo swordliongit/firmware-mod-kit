@@ -1,0 +1,129 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=60
+STOP=90
+
+wanctl_get_iface() {
+        local _var="$1"
+        local _iface="$2"
+        [ -d /tmp/run/netconfig/$_iface -a -f /tmp/run/netconfig/$_iface/netcfg.conf ] && \
+                export -n -- "$_var=$(cat /tmp/run/netconfig/$_iface/netcfg.conf|grep dev|awk -F '=' '{ print $2}')" || \
+                export -n -- "$_var="
+}
+wanctl_get_iface_gw() {
+        local _var="$1"
+        local _iface="$2"
+        [ -d /tmp/run/netconfig/$_iface -a -f /tmp/run/netconfig/$_iface/netcfg.conf ] && \
+                export -n -- "$_var=$(cat /tmp/run/netconfig/$_iface/netcfg.conf|grep gateway |awk -F '=' '{ print $2}')" || \
+                export -n -- "$_var="
+}
+add_route() {
+
+	local config="$1"
+
+	# is this route intended for the
+	# $INTERFACE of this hotplug event
+	config_get interface "$config" interface
+	#[ "$interface" != "$INTERFACE" ] && return 0
+	
+	# get the real interface name from network config
+ 	#config_get dev "$interface" ifname
+	dev=
+	wanctl_get_iface dev $interface 	
+	[ -z $dev ] && {
+		if [ $interface = "br-lan"  ] ;then
+			dev=$interface
+		else
+			echo " $interface not find real run device"
+			return 0
+		fi
+	}
+
+	config_get target "$config" target
+	config_get netmask "$config" netmask
+	config_get gateway "$config" gateway
+	config_get metric "$config" metric
+	config_get mtu "$config" mtu
+
+	# make sure there is a gateway and a target
+	[ -n "$target" ] || {
+		echo "Missing target in route section $config"
+		return 1
+	}
+	[ -n "$gateway" ] || {
+	#	config_get gateway "$interface" gateway
+		wanctl_get_iface_gw gateway $interface
+	#	[ -z $gateway ] && {
+	#		echo "gateway no find on interface $interface"
+	#		return 0
+	#	}
+	}
+
+	# handle "0.0.0.0" as "no gateway given" to allow
+	# defining gateway-less routes while still keeping
+	# the possibility to have static routes with a
+	# proper gateway on interfaces with dynamic ips 
+	[ "$gateway" = "0.0.0.0" ] && gateway=""
+
+	dest="${netmask:+-net "$target" netmask "$netmask"}"
+	dest="${dest:--host "$target"}"
+	
+	/sbin/route add $dest ${gateway:+gw "$gateway"} \
+		${dev:+dev "$dev"} ${metric:+ metric "$metric"} \
+		${mtu:+mss "$mtu"}
+	echo "$dest ${dev:+dev $dev}" >> /tmp/routes
+}
+del_route(){
+
+  [ -f /tmp/routes ] || return 0
+
+  cat /tmp/routes | while read tmpline
+  do
+  	/sbin/route del $tmpline
+  done 
+  rm /tmp/routes
+#  for line in $(cat /tmp/routes | awk '{ print $0 }') 
+#  do
+#	echo $line
+#  done  
+}
+add_route6() {
+	local config="$1"
+
+	# is this route intended for the
+	# $INTERFACE of this hotplug event
+	config_get interface "$config" interface
+	[ "$interface" != "$INTERFACE" ] && return 0
+	
+	# get the real interface name from network config
+	config_get dev "$interface" ifname
+
+	config_get target "$config" target
+	config_get gateway "$config" gateway
+	config_get metric "$config" metric
+	config_get mtu "$config" mtu
+
+	# make sure there is a gateway and a target
+	[ -n "$target" ] || {
+		echo "Missing target in route section $config"
+		return 1
+	}
+	[ -n "$gateway" ] || {
+		config_get gateway "$interface" gateway
+	}
+
+	/sbin/route -A inet6 add $target ${gateway:+gw "$gateway"} \
+		${dev:+dev "$dev"} ${metric:+ metric "$metric"} \
+		${mtu:+mss "$mtu"}
+}
+
+start(){
+	config_load routes
+	config_foreach "add_route" route
+}
+stop(){
+	echo "need to clear the route table"
+	del_route
+	
+}

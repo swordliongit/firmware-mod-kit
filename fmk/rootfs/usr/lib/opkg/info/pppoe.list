@@ -1,0 +1,5 @@
+/usr/sbin/pppd
+/usr/sbin/pppds
+/usr/lib/pppd/2.4.4/rp-pppoe.so
+/usr/sbin/pppoe
+/usr/sbin/pppoe-server

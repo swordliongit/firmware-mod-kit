@@ -1,0 +1,39 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=20
+STOP=97
+
+syslog_config() {
+	local cfg="$1"
+	local log_enable
+
+	config_get log_enable "$cfg" log_enable 
+
+	config_get log_ip "$cfg" log_ip
+	config_get log_size "$cfg" log_size 
+	config_get log_port "$cfg" log_port 514
+	config_get log_type "$cfg" log_type circular
+	config_get log_file "$cfg" log_file "/var/log/messages"
+	config_get log_level "$cfg" log_level 3
+	log_level=$((log_level+1))
+	if [ "$log_enable" == "1" ]; then
+		if [ "$log_type" = "file" ]; then
+			syslogd ${log_size:+ -s ${log_size}} ${log_level:+ -l ${log_level}} -O $log_file ${log_ip:+-L -R ${log_ip}:${log_port}} 
+		else
+			syslogd ${log_size:+ -C${log_size}} ${log_level:+ -l ${log_level}} ${log_ip:+-L -R ${log_ip}:${log_port}}
+		fi
+	else
+		cat /dev/null > /var/log/messages
+	fi
+}
+boot() {
+	:
+}
+start(){
+        config_load system 
+        config_foreach syslog_config system 
+}
+stop(){
+	killall syslogd
+}

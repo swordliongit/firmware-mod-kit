@@ -1,0 +1,3 @@
+/lib/modules/2.6.32.27/pppox.ko
+/lib/modules/2.6.32.27/pppoe.ko
+/etc/modules.d/40-pppoe

@@ -1,0 +1,4 @@
+/lib/modules/2.6.32.27/iptable_nat.ko
+/lib/modules/2.6.32.27/nf_nat.ko
+/lib/modules/2.6.32.27/ipt_MASQUERADE.ko
+/etc/modules.d/42-ipt-nat

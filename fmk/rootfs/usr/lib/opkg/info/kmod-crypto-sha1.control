@@ -1,0 +1,13 @@
+Package: kmod-crypto-sha1
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1), kmod-crypto-core
+Provides: 
+Source: package/kernel
+Section: kernel
+Status: unknown hold not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 1796
+Description:  SHA1 digest CryptoAPI module

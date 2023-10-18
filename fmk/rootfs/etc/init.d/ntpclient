@@ -1,0 +1,118 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=71
+STOP=29
+
+. /etc/functions.sh
+
+unset SERVER1
+unset SERVER2
+unset PORT
+unset INTERVAL
+unset COUNT
+unset INTERFACE_GLOBAL
+
+NTPC=`which ntpclient`
+
+check_server() {
+	local hostname1
+	local hostname2
+	local port
+
+	config_get hostname1 $1 hostname
+	config_get hostname2 $1 hostname
+	
+	[ -n "$SERVER2" ] && return
+	
+	if [ -z "$SERVER1" ]
+	then
+		if [ -n "$hostname1" ]
+			then	SERVER1=$hostname1
+			return
+		fi
+	fi
+
+	if [ -z "$SERVER2" ]
+	then
+		if [ -n "$hostname2" ]
+			then	SERVER2=$hostname2
+				config_get port $1 port
+				PORT=${port:-123}	
+			return
+		fi
+	fi
+}
+
+set_drift() {
+	config_get freq $1 freq
+	[ -n "$freq" ] && adjtimex -f $freq >/dev/null
+}
+
+start_ntpclient() {
+	#echo "start...................................."
+	config_foreach set_drift ntpdrift
+	config_foreach check_server ntpserver
+	logger starting ntpclient
+	#echo "server1:$SERVER1"
+	#echo "server2:$SERVER2"
+	$NTPC ${COUNT:+-c $COUNT} ${INTERVAL:+-i $INTERVAL} -s -l -D -p $PORT -a $SERVER1 -b $SERVER2 2> /dev/null
+}
+
+stop_ntpclient() {
+	#echo "stop....................................."
+	logger stopping ntpclient
+	RUNNING=`ps  | grep $NTPC | grep -v grep`
+	if [ -n "$RUNNING" ]
+	then pkill ntpclient
+	fi
+}
+
+load_settings() {
+	local interval
+	local count
+	local iface
+	
+	config_get interval $1 interval
+	config_get count $1 count
+	config_get interface $1 interface
+	
+	[ -n "$count" ] && COUNT=$count
+	[ -n "$interval" ] && INTERVAL=$interval
+	[ -n "$interface" ] && INTERFACE_GLOBAL=$interface
+}
+
+set_ntpc() {
+	local en_ntpc
+	RUNNING=`ps  | grep $NTPC | grep -v grep`
+	
+	config_get en_ntpc $1 enable
+	
+	if [ "$en_ntpc" == "1" ]
+	then
+		if [ -n "$RUNNING" ]
+		then pkill ntpclient 
+		fi
+	start_ntpclient
+	fi
+	
+	if [ -z "$en_ntpc" ] && [ -n "$RUNNING" ]
+	then stop_ntpclient
+	fi
+}
+
+start(){
+	config_load ntpclient
+	config_foreach load_settings ntpclient
+	config_load ntpclient
+	config_foreach set_ntpc ntpclient
+}
+
+stop(){
+	stop_ntpclient
+}
+
+restart(){
+	stop
+	start
+}

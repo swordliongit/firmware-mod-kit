@@ -1,0 +1,13 @@
+Package: ip
+Version: 2.6.35-3
+Depends: 
+Provides: 
+Source: package/iproute2
+Section: net
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 85119
+Description:  Routing control utility

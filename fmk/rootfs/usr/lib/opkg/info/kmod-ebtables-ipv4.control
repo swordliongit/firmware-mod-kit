@@ -1,0 +1,14 @@
+Package: kmod-ebtables-ipv4
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1), kmod-ebtables
+Provides: 
+Source: package/kernel
+Section: kernel
+Status: unknown hold not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 2582
+Description:  This option adds the IPv4 support to ebtables, which allows basic
+ IPv4 header field filtering, ARP filtering as well as SNAT, DNAT targets.

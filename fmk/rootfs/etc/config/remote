@@ -1,0 +1,22 @@
+
+config 'tr069' 'tr069_0'
+	option 'enable' '0'
+	option 'username' 'hgw'
+	option 'password' 'hgw'
+	option 'periodic_inform_enable' '1'
+	option 'periodic_inform_interval' '43200'
+	option 'periodic_inform_time' '0000-00-00T00:00:00'
+	option 'connection_request_username' 'itms'
+	option 'connection_request_password' 'itms'
+	option 'upgrades_managed' '1'
+	option 'url' 'http://openacs/acs'
+	option 'ca_cert' '/etc/tr069/ca.pem'
+
+config 'stun' 'stun_0'
+	option 'enable' '0'
+	option 'server_port' '2000'
+	option 'server_address' 'stun.test.com'
+	option 'username' 'username'
+	option 'password' 'password'
+	option 'min_keep_alive_period' '100'
+

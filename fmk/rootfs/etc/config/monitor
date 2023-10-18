@@ -1,0 +1,3 @@
+
+config 'general' 'monitor'
+	option 'enable' '0'

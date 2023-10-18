@@ -1,0 +1,8 @@
+/etc/wanctl/wanctl_create.sh
+/etc/wanctl/wanctl_up.sh
+/etc/wanctl/wanctl.conf.template
+/sbin/wand
+/etc/init.d/wanctl
+/etc/wanctl/wanctl_delete.sh
+/etc/config/wanctl
+/sbin/wanctl

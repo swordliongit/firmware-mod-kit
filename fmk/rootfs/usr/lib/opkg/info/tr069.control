@@ -1,0 +1,13 @@
+Package: tr069
+Version: 1
+Depends: libopenssl, libpthread, libuci
+Provides: 
+Source: package/tr069
+Section: net
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 162302
+Description:  TR069

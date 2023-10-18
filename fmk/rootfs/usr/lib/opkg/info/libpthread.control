@@ -1,0 +1,13 @@
+Package: libpthread
+Version: 0.9.30.1-43.35
+Depends: librt
+Provides: 
+Source: package/base-files
+Section: libs
+Status: unknown hold not-installed
+Essential: yes
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 18893
+Description:  POSIX thread library

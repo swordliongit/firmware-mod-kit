@@ -1,0 +1,21 @@
+Package: kmod-ipt-core
+Version: 2.6.32.27-1
+Depends: kernel (=2.6.32.27-1)
+Provides: 
+Source: package/kernel
+Section: kernel
+Status: unknown hold not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 5805
+Description:  Netfilter core kernel modules
+ Includes:
+ - comment (2.6)
+ - limit
+ - LOG
+ - mac
+ - multiport
+ - REJECT
+ - TCPMSS

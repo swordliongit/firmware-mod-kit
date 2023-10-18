@@ -1,0 +1,13 @@
+Package: RalinkAP-util
+Version: 2.7.1.5-0
+Depends: 
+Provides: 
+Source: package/ra_wifi
+Section: utils
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 5537
+Description:  This package contains the RalinkAP command-line utility.

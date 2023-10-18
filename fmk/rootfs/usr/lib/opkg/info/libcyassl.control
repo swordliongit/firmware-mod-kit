@@ -1,0 +1,14 @@
+Package: libcyassl
+Version: 1.4.0-2
+Depends: 
+Provides: 
+Source: package/cyassl
+Section: libs
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: OpenWrt Developers Team <openwrt-devel@openwrt.org>
+Architecture: ramips
+Installed-Size: 66516
+Description:  CyaSSL is an SSL library optimized for small footprint, both on disk and for
+ memory use.

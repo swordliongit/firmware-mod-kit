@@ -1,0 +1,81 @@
+#!/bin/sh /etc/rc.common
+
+START=71
+STOP=29
+
+port_config()
+{
+        local cfg="$1"
+        local _name
+        local _auto_reg
+        local _speed_mode
+        local _duplex_mode
+        local _reg_offset
+        local get_value
+        local set_value
+#       local get_value=0
+#       local set_value=0
+#       local result=0
+#       local hex_value=0
+
+        config_get _name "$cfg" name
+        config_get _auto_reg "$cfg" AutoNeg
+        config_get _speed_mode "$cfg" SpeedMode
+        config_get _duplex_mode "$cfg" DuplexMode
+
+        if [ $_name = "LAN1" ]; then
+                _reg_offset=0x3100
+        elif [ $_name = "LAN2" ]; then
+                _reg_offset=0x3200
+        elif [ $_name = "LAN3" ]; then
+                _reg_offset=0x3300
+        elif [ $_name = "LAN4" ]; then
+                _reg_offset=0x3400
+        fi
+
+        swconfig dev switch0 swreg get "$_reg_offset"
+        get_value=`dmesg | grep switch | grep register | tail -1 | awk {'print $8'}`
+        echo "get:"$_reg_offset=$get_value
+
+        if [ $_auto_reg = "1" ]; then
+                set_value=$((get_value | 0x80))
+                echo "auto-neg get:"$_reg_offset=$get_value
+        elif [ $_auto_reg = "0" ]; then
+                set_value=$((get_value & 0xFFFFFF01))
+                if [ $_speed_mode = "0" ]; then
+                        set_value=$((get_value | 0x00))
+                elif [ $_speed_mode = "1" ]; then
+                        set_value=$((get_value | 0x40))
+                elif [ $_speed_mode = "2" ]; then
+                        set_value=$((get_value | 0x80))
+                fi
+                if [ $DuplexMode = "0" ]; then
+                        set_value=$((get_value | 0x0))
+                elif [ $DuplexMode = "1" ]; then
+                        set_value=$((get_value | 0x02))
+                fi
+        fi
+
+        echo "set:"$_reg_offset=$set_value
+        sleep 3
+        swconfig dev switch0 swreg set "$_reg_offset $set_value"
+
+#   get_value=$((0x12))
+#   set_value=$((0x31))
+#   result=$((get_value | $set_value))
+#   echo $result
+#   hex_value=$((16#$result))
+#   echo $hex_value
+}
+
+
+
+start(){
+        echo "start portcfg"
+#        config_load portcfg
+#        config_foreach port_config port
+}
+
+stop(){
+        echo "stop portcfg"
+}

@@ -98,7 +98,7 @@ local function AddIpToBridge()
         -- Commit the changes
         cursor:commit("network")
     else
-        print("Failed to retrieve IP address or netmask from eth1_0")
+        io.write("\n\n" .. "Failed to retrieve IP address or netmask from eth1_0")
     end
 end
 
@@ -188,7 +188,7 @@ function CronSetup()
         -- Restart the cron service (optional, if needed)
         os.execute("/etc/init.d/cron restart")
     else
-        io.write("Failed to open the crontab file")
+        io.write("\n\n" .. "Failed to open the crontab file")
     end
 end
 
@@ -235,8 +235,8 @@ end
     EXECUTION START
 ]]
 
-io.write(client .. "Log start\n")
-io.write(client .. "Before killing the current udhcpc\n")
+io.write(client .. "LOG START")
+io.write("\n\n" .. client .. "Before killing the current udhcpc")
 
 -- Power button red. It will turn green if we can read/write into Odoo.
 os.execute("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
@@ -246,19 +246,19 @@ bootChecker()
 
 -- UDHCPC Clear Block
 os.execute("killall udhcpc")
-io.write(client .. "After killing the current udhcpc\n")
+io.write("\n\n" .. client .. "After killing the current udhcpc")
 os.execute("sleep 1")
 
 -- Static IP Clear Block
 if dhcpOn() then
     clearIpOnBridge()
-    io.write(client .. "DHCPC IP cleared\n")
+    io.write("\n\n" .. client .. "DHCPC IP cleared")
 end
 os.execute("sleep 1")
 executeAndWait("/etc/init.d/network restart")
 
 -- UDHCPC Start Block
-io.write(client .. "Before ping loop\n")
+io.write("\n\n" .. client .. "Before ping loop")
 while not hasInternet() do
     if isInterfacePluggedIn("eth1_0") then
         startUdhcpc()
@@ -267,12 +267,12 @@ while not hasInternet() do
             os.execute("killall udhcpc")
         end
     else
-        io.write(client .. "Internet Cable Unplugged on Eth1_0!")
+        io.write("\n\n" .. client .. "Internet Cable Unplugged on Eth1_0!")
     end
     os.execute("sleep 2")
-    io.write(client .. "Tried to get ip\n")
+    io.write("\n\n" .. client .. "Tried to get ip")
 end
-io.write(client .. "Connection Established using UDHCPC\n")
+io.write("\n\n" .. client .. "Connection Established using UDHCPC")
 
 AddIpToBridge()
 
@@ -288,7 +288,7 @@ if hasInternet() then
 
     local flagExists = io.open(flagFile) ~= nil
     if flagExists then
-        io.write(client .. "before lua init - flag on\n")
+        io.write("\n\n" .. client .. "before lua init - flag on")
 
         -- Execute odoo_bridge.lua and capture errors to script.log
         local success, error_message = pcall(dofile, "/etc/project_odoo/odoo_bridge.lua")
@@ -297,7 +297,7 @@ if hasInternet() then
         if not success then
             local logFile = io.open("/tmp/script.log", "a")
             io.output(logFile)
-            io.write(bridge .. "Error in odoo_bridge.lua: " .. error_message .. "\n")
+            io.write("\n\n" .. bridge .. "Error in odoo_bridge.lua: " .. error_message)
             io.close(logFile)
         end
     else
@@ -338,7 +338,7 @@ if hasInternet() then
         -- os.remove("/tmp/luasec_0.4-1_ramips.ipk")
 
         io.open(flagFile, "w"):close()
-        io.write(client .. "before lua init - flag off\n")
+        io.write("\n\n" .. client .. "before lua init - flag off")
         -- Execute odoo_bridge.lua and capture errors to script.log
         local success, error_message = pcall(dofile, "/etc/project_odoo/odoo_bridge.lua")
 
@@ -346,7 +346,7 @@ if hasInternet() then
         if not success then
             local logFile = io.open("/tmp/script.log", "a")
             io.output(logFile)
-            io.write(bridge .. "Error in odoo_bridge.lua: " .. error_message .. "\n")
+            io.write("\n\n" .. bridge .. "Error in odoo_bridge.lua: " .. error_message)
             io.close(logFile)
         end
     end

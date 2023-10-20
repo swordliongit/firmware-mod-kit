@@ -70,11 +70,11 @@ local Odoo_login = function()
 
     if code == 200 then
         _G.cookie = headers["set-cookie"]:match("(.-);")
-        io.write(client .. cookie .. "\n\n")
+        io.write("\n\n" .. client .. cookie)
         return true
     else
-        io.write(server .. "Failed to authenticate. HTTP code: " ..
-            tostring(code) .. "\nResponse body:\n" .. responseBody .. "\n\n")
+        io.write("\n\n" .. server .. "Failed to authenticate. HTTP code: " ..
+            tostring(code) .. "\nResponse body:\n" .. responseBody)
         return false
     end
 end
@@ -136,6 +136,8 @@ local Odoo_read = function()
         }
     })
 
+    io.write("\n\n" .. client .. "Send " .. requestBody)
+
     local res, code, headers, status = http.request {
         method = "POST",
         url = "http://89.252.165.116:8069/web/dataset/search_read",
@@ -152,11 +154,11 @@ local Odoo_read = function()
     local responseBody = table.concat(body)
 
     if code == 200 then
-        io.write(client .. responseBody .. "\n\n")
+        io.write("\n\n" .. server .. responseBody)
         return true, responseBody
     else
-        io.write(server ..
-            "Failed to fetch data. HTTP code: " .. tostring(code) .. "\nResponse body:\n" .. responseBody .. "\n\n")
+        io.write("\n\n" .. server ..
+            "Failed to fetch data. HTTP code: " .. tostring(code) .. "\nResponse body:\n" .. responseBody)
         return false, responseBody
     end
 end
@@ -235,18 +237,18 @@ local Odoo_execute = function(parsed_values)
     local need_reboot = false
     local need_wifi_reload = false
 
-    io.write(client .. "\nExecution Query: **")
+    io.write("\n\n" .. client .. "Execution Query: [-->")
     for key, value in pairs(parsed_values) do
         if key == "name" and value ~= Name.Get_name() then
-            io.write(client .. "-Name-")
+            io.write("-Name-")
             Name.Set_name(value)
         end
         if key == "x_site" and value ~= Site.Get_site() then
-            io.write(client .. "-Site-")
+            io.write("-Site-")
             Site.Set_site(value)
         end
         if key == "x_channel" and value ~= Wireless.Get_wireless_channel() then
-            io.write(client .. "-Channel-")
+            io.write("-Channel-")
             if value == "auto" then
                 Wireless.Set_wireless_channel("0")
             else
@@ -295,7 +297,7 @@ local Odoo_execute = function(parsed_values)
         --     need_reboot = true
         -- end
         if key == "x_enable_wireless" and value ~= Wireless.Get_wireless_status() then
-            io.write(client .. "-Wireless-")
+            io.write("-Wireless-")
             if value then
                 Wireless.Set_wireless_status("1")
             else
@@ -304,32 +306,32 @@ local Odoo_execute = function(parsed_values)
             need_wifi_reload = true
         end
         if key == "x_ssid1" and value ~= Ssid.Get_ssid1() then
-            io.write(client .. "-SSID1-")
+            io.write("-SSID1-")
             Ssid.Set_ssid1(value)
             need_wifi_reload = true
         end
         if key == "x_passwd_1" and value ~= Ssid.Get_ssid1_passwd() then
-            io.write(client .. "-PWD1-")
+            io.write("-PWD1-")
             Ssid.Set_ssid1_passwd(value)
             need_wifi_reload = true
         end
         if key == "x_ssid2" and value ~= Ssid.Get_ssid2() then
-            io.write(client .. "-SSID2-")
+            io.write("-SSID2-")
             Ssid.Set_ssid2(value)
             need_wifi_reload = true
         end
         if key == "x_passwd_2" and value ~= Ssid.Get_ssid2_passwd() then
-            io.write(client .. "-PWD2-")
+            io.write("-PWD2-")
             Ssid.Set_ssid2_passwd(value)
             need_wifi_reload = true
         end
         if key == "x_ssid3" and value ~= Ssid.Get_ssid3() then
-            io.write(client .. "-SSID3-")
+            io.write("-SSID3-")
             Ssid.Set_ssid3(value)
             need_wifi_reload = true
         end
         if key == "x_passwd_3" and value ~= Ssid.Get_ssid3_passwd() then
-            io.write(client .. "-PWD3-")
+            io.write("-PWD3-")
             Ssid.Set_ssid3_passwd(value)
             need_wifi_reload = true
         end
@@ -342,7 +344,7 @@ local Odoo_execute = function(parsed_values)
         --     need_wifi_reload = true
         -- end
         if key == "x_enable_ssid1" and value ~= Ssid.Get_ssid1_status() then
-            io.write(client .. "-ENSSID1-")
+            io.write("-ENSSID1-")
             if value then
                 Ssid.Set_ssid1_status("1")
             else
@@ -351,7 +353,7 @@ local Odoo_execute = function(parsed_values)
             need_wifi_reload = true
         end
         if key == "x_enable_ssid2" and value ~= Ssid.Get_ssid2_status() then
-            io.write(client .. "-ENSSID2-")
+            io.write("-ENSSID2-")
             if value then
                 Ssid.Set_ssid2_status("1")
             else
@@ -360,7 +362,7 @@ local Odoo_execute = function(parsed_values)
             need_wifi_reload = true
         end
         if key == "x_enable_ssid3" and value ~= Ssid.Get_ssid3_status() then
-            io.write(client .. "-ENSSID3-")
+            io.write("-ENSSID3-")
             if value then
                 Ssid.Set_ssid3_status("1")
             else
@@ -380,15 +382,15 @@ local Odoo_execute = function(parsed_values)
         -- Time.Set_manualtime(value)
         -- end
         if key == "x_new_password" and value ~= false then
-            io.write(client .. "-NPWD-")
+            io.write("-NPWD-")
             Password.Set_LuciPasswd(value)
         end
         if key == "x_reboot" and value ~= false then
-            io.write(client .. "-Need Reboot")
+            io.write("-Need Reboot")
             need_reboot = true
         end
         if key == "x_upgrade" and value ~= false then
-            io.write(client .. "-Upgrade-")
+            io.write("-Upgrade-")
             -- Ensure you're logged in before downloading
             -- if not _G.cookie or _G.cookie == "" then
             --     Odoo_login()
@@ -396,26 +398,27 @@ local Odoo_execute = function(parsed_values)
             Sysupgrade.Upgrade()
         end
         if key == "x_vlanId" and value ~= Vlan.Get_VlanId() then
-            io.write(client .. "-Vlan-")
+            io.write("-Vlan-")
             Vlan.Set_VlanId(value)
             io.write(Vlan.Get_VlanId())
             need_reboot = true
         end
     end
     if need_wifi_reload then
-        io.write(client .. "-WIFI RELOAD-")
+        io.write("-WIFI RELOAD-")
         luci_util.exec("/sbin/wifi")
     end
     if need_reboot then
-        io.write(client .. "-REBOOT-")
+        io.write("-REBOOT-")
         os.execute("reboot")
     end
+    io.write("<--]")
 end
 
 local Odoo_write = function()
     local body = {}
 
-    local requestBody = json.encode({
+    local requestData = {
         ["name"] = Name.Get_name(),
         ["x_site"] = Site.Get_site(),
         -- ["x_device_update"] = false,
@@ -452,7 +455,14 @@ local Odoo_write = function()
         -- ["x_new_password"] = false,
         -- ["x_reboot"] = false,
         -- ["x_upgrade"] = false
-    })
+    }
+
+    local requestBody = json.encode(requestData)
+    requestData["x_log"] = nil
+    -- I need to exclude the log field
+    local RequestBody_forPrint = json.encode(requestData)
+
+    io.write("\n\n" .. client .. "Send " .. RequestBody_forPrint)
 
     local res, code, headers, status = http.request({
         method = "POST",
@@ -470,11 +480,11 @@ local Odoo_write = function()
     local responseBody = table.concat(body)
 
     if code == 200 then
-        io.write(client .. responseBody .. "\n\n")
+        io.write("\n\n" .. server .. responseBody)
         return true
     else
-        io.write(server ..
-            "Failed to post data. HTTP code: " .. tostring(code) .. "\nResponse body:\n" .. responseBody .. "\n\n")
+        io.write("\n\n" .. server ..
+            "Failed to post data. HTTP code: " .. tostring(code) .. "\nResponse body:\n" .. responseBody)
         return false
     end
 end
@@ -506,7 +516,8 @@ function Odoo_Connector()
     repeat
         auth_completed = Odoo_login()
         if auth_completed == false then
-            io.write(client .. "\n\nLogin backoff activated! Sleeping for " .. backoff_counter .. " seconds..\n\n")
+            io.write("\n\n" ..
+                client .. "Login backoff activated! Sleeping for " .. backoff_counter .. " seconds..\n\n")
             os.execute("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
             os.execute("sleep " .. tostring(backoff_counter))
             backoff_counter = backoff_counter + 2
@@ -522,8 +533,8 @@ function Odoo_Connector()
     repeat
         write_completed = Odoo_write()
         if write_completed == false then
-            io.write(client ..
-                "\n\nInitial write backoff activated! Sleeping for " .. backoff_counter .. " seconds..\n\n")
+            io.write("\n\n" ..
+                client .. "Initial write backoff activated! Sleeping for " .. backoff_counter .. " seconds..")
             os.execute("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
             os.execute("sleep " .. tostring(backoff_counter))
             backoff_counter = backoff_counter + 2
@@ -544,8 +555,7 @@ function Odoo_Connector()
         repeat
             read_completed, read_response = Odoo_read()
             if read_completed == false then
-                io.write(client ..
-                    "\n\nRead backoff activated! Sleeping for " .. backoff_counter .. " seconds..\n\n")
+                io.write("\n\n" .. client .. "Read backoff activated! Sleeping for " .. backoff_counter .. " seconds..")
                 os.execute("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
                 os.execute("sleep " .. tostring(backoff_counter))
                 backoff_counter = backoff_counter + 2
@@ -565,8 +575,7 @@ function Odoo_Connector()
         repeat
             write_completed = Odoo_write()
             if write_completed == false then
-                io.write(client ..
-                    "\n\nWrite backoff activated! Sleeping for " .. backoff_counter .. " seconds..\n\n")
+                io.write("\n\n" .. client .. "Write backoff activated! Sleeping for " .. backoff_counter .. " seconds..")
                 os.execute("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
                 os.execute("sleep " .. tostring(backoff_counter))
                 backoff_counter = backoff_counter + 2

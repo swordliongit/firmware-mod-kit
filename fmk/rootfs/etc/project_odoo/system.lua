@@ -43,10 +43,10 @@ function System.Get_cpu()
             -- print("15-Minute Load Average: " .. load15_percent .. "%")
             return load1_percent
         else
-            io.write("Failed to parse load averages.")
+            io.write("\n\nFailed to parse load averages.")
         end
     else
-        io.write("Unable to open /proc/loadavg")
+        io.write("\n\nUnable to open /proc/loadavg")
     end
 end
 
@@ -78,7 +78,7 @@ function System.Get_log()
     end
 
     local log_lines = {}
-    local max_lines = 30
+    local max_lines = 1000
 
     -- Read all lines into a table
     for line in file:lines() do

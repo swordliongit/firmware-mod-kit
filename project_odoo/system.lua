@@ -12,8 +12,6 @@ All modification and duplication of this software is forbidden and licensed unde
 System = {}
 
 function System.Get_ram()
-    local logFile = io.open("/tmp/script.log", "a")
-    io.output(logFile)
     local sys = require("luci.sys")
 
     local output = sys.exec("free -m")
@@ -29,8 +27,6 @@ function System.Get_ram()
 end
 
 function System.Get_cpu()
-    local logFile = io.open("/tmp/script.log", "a")
-    io.output(logFile)
     local file = io.open("/proc/loadavg", "r")
     if file then
         local loadavg = file:read("*all")
@@ -54,32 +50,64 @@ function System.Get_cpu()
     end
 end
 
-function System.Get_log()
-    -- Read the last 200 lines of the log file
-    local file = io.open("/tmp/script.log", "r")
-    local log_text = ""
-
-    if file then
-        local lines = {}
-        local line_count = 0
-
-        -- Read the file line by line
-        for line in file:lines() do
-            line_count = line_count + 1
-            lines[line_count] = line
-
-            -- If we have read more than 200 lines, remove the oldest line
-            if line_count > 200 then
-                table.remove(lines, 1)
-            end
+function System.base64_encode(data)
+    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    return ((data:gsub('.', function(x)
+        local r, b = '', x:byte()
+        for i = 8, 1, -1 do
+            r = r .. (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0')
         end
+        return r;
+    end) .. '0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+        if (#x < 6) then
+            return ''
+        end
+        local c = 0
+        for i = 1, 6 do
+            c = c + (x:sub(i, i) == '1' and 2 ^ (6 - i) or 0)
+        end
+        return b:sub(c + 1, c + 1)
+    end) .. (data:len() % 3 == 1 and '==' or (data:len() % 3 == 2 and '=' or '')))
+end
 
-        -- Convert the list of log lines into a single string
-        log_text = table.concat(lines, "\n")
+function System.Get_log()
+    -- Attempt to open the log file
+    local file = io.open("/tmp/script.log", "r")
+    if not file then
+        return "Error: Log file not found or cannot be opened."
+    end
 
-        -- Close the file
+    local log_lines = {}
+    local max_lines = 30
+
+    -- Read all lines into a table
+    for line in file:lines() do
+        table.insert(log_lines, line)
+    end
+
+    -- Calculate the number of lines to return
+    local num_lines = #log_lines
+    local start_index = math.max(num_lines - max_lines + 1, 1)
+
+    -- Retrieve the last lines
+    local last_lines = table.concat(log_lines, "\n", start_index, num_lines)
+
+    -- Close the file
+    file:close()
+
+    return last_lines
+end
+
+-- Function to read the execution time
+function System.Get_ScriptExecutionTime()
+    -- Define the path to the execution time file
+    local execution_time_file = "/tmp/script_execution_time.txt"
+    local file = io.open(execution_time_file, "r")
+    if file then
+        local execution_time = file:read("*l")
         file:close()
-
-        return log_text
+        return tostring(execution_time)
+    else
+        return "Execution time not found"
     end
 end

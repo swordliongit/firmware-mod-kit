@@ -27,7 +27,7 @@ function Vlan.Get_VlanId()
         end
     end)
 
-    return vlanId
+    return tostring(vlanId)
 end
 
 function Vlan.Set_VlanId(vlanId)

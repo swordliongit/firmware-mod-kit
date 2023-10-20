@@ -1,5 +1,7 @@
 #!/bin/ash
 
+date +"%Y-%m-%d %H:%M:%S" > /tmp/script_execution_time.txt
+
 LOG_FILE="/tmp/script.log"
 MAX_SIZE_BYTES="5000000" # Maximum file size in bytes (1M)
 

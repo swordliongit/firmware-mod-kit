@@ -3,8 +3,6 @@ Sysupgrade = {}
 function Sysupgrade.Upgrade()
     local url = "http://89.252.165.116:8069/web/content/45?download=true&access_token="
     local filename = "new-firmware.bin"
-    local logFile = io.open("/tmp/script.log", "a")
-    io.output(logFile)
 
     local response = {}
     local _, code, headers = http.request {
@@ -26,12 +24,12 @@ function Sysupgrade.Upgrade()
         if file then
             file:write(table.concat(response))
             file:close()
-            io.write("File downloaded and saved:", filename .. "\n")
+            io.write(client .. "File downloaded and saved:", filename .. "\n")
             os.execute("sysupgrade -n tmp/" .. filename)
         else
-            io.write("Error opening file for writing" .. "\n")
+            io.write(client .. "Error opening file for writing" .. "\n")
         end
     else
-        io.write("HTTP request failed with status code:", code .. "\n")
+        io.write(server .. "HTTP request failed with status code:", code .. "\n")
     end
 end

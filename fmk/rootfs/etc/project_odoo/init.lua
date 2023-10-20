@@ -4,10 +4,21 @@
 ]]
 
 --[[
-    DEFINITIONS
+    Description:
+
+    First boot -> Enable DHCP pass
+    -> Reboot -> Clear static Ip -> Restart Network
+    -> Start UDHCPC -> Set Dummy Ip -> Install Packages -> Start Bridging
 ]]
+
+--[[
+    Field Definitions
+]]
+_G.server = "[SERVER] "
+_G.client = "[MSS5004W] "
+_G.bridge = "[BRIDGE] "
 -- Set output log file
-local logFile = io.open("/tmp/script.log", "w")
+_G.logFile = io.open("/tmp/script.log", "w")
 io.output(logFile)
 
 -- Check if packages were installed
@@ -218,32 +229,36 @@ end
 --     end
 -- end
 
+
+
 --[[
     EXECUTION START
 ]]
 
-io.write("Log start\n")
-io.write("Before killing the current udhcpc\n")
+io.write(client .. "Log start\n")
+io.write(client .. "Before killing the current udhcpc\n")
 
 -- Power button red. It will turn green if we can read/write into Odoo.
 os.execute("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
 enableDhcpPass()
 
+bootChecker()
+
 -- UDHCPC Clear Block
 os.execute("killall udhcpc")
-io.write("After killing the current udhcpc\n")
+io.write(client .. "After killing the current udhcpc\n")
 os.execute("sleep 1")
 
 -- Static IP Clear Block
 if dhcpOn() then
     clearIpOnBridge()
-    io.write("DHCPC IP cleared\n")
+    io.write(client .. "DHCPC IP cleared\n")
 end
 os.execute("sleep 1")
 executeAndWait("/etc/init.d/network restart")
 
 -- UDHCPC Start Block
-io.write("Before ping loop\n")
+io.write(client .. "Before ping loop\n")
 while not hasInternet() do
     if isInterfacePluggedIn("eth1_0") then
         startUdhcpc()
@@ -252,12 +267,12 @@ while not hasInternet() do
             os.execute("killall udhcpc")
         end
     else
-        io.write("Internet Cable Unplugged on Eth1_0!")
+        io.write(client .. "Internet Cable Unplugged on Eth1_0!")
     end
     os.execute("sleep 2")
-    io.write("Tried to get ip\n")
+    io.write(client .. "Tried to get ip\n")
 end
-io.write("Connection Established using UDHCPC\n")
+io.write(client .. "Connection Established using UDHCPC\n")
 
 AddIpToBridge()
 
@@ -273,9 +288,8 @@ if hasInternet() then
 
     local flagExists = io.open(flagFile) ~= nil
     if flagExists then
-        io.write("before lua init - flag on\n")
+        io.write(client .. "before lua init - flag on\n")
 
-        bootChecker()
         -- Execute odoo_bridge.lua and capture errors to script.log
         local success, error_message = pcall(dofile, "/etc/project_odoo/odoo_bridge.lua")
 
@@ -283,7 +297,7 @@ if hasInternet() then
         if not success then
             local logFile = io.open("/tmp/script.log", "a")
             io.output(logFile)
-            io.write("Error in odoo_bridge.lua: " .. error_message .. "\n")
+            io.write(bridge .. "Error in odoo_bridge.lua: " .. error_message .. "\n")
             io.close(logFile)
         end
     else
@@ -307,7 +321,6 @@ if hasInternet() then
         -- os.execute(
         --     "wget -P /tmp http://81.0.124.218/attitude_adjustment/12.09/ramips/rt305x/packages/luasec_0.4-1_ramips.ipk"
         -- )
-
         -- os.execute("opkg install /tmp/luasocket_2.0.2-3_ramips.ipk")
         os.execute("opkg install /tmp/json4lua_0.9.53-1_ramips.ipk")
         -- os.execute("opkg install /tmp/luafilesystem_1.5.0-1_ramips.ipk")
@@ -325,9 +338,7 @@ if hasInternet() then
         -- os.remove("/tmp/luasec_0.4-1_ramips.ipk")
 
         io.open(flagFile, "w"):close()
-        io.write("before lua init - flag off\n")
-
-        bootChecker()
+        io.write(client .. "before lua init - flag off\n")
         -- Execute odoo_bridge.lua and capture errors to script.log
         local success, error_message = pcall(dofile, "/etc/project_odoo/odoo_bridge.lua")
 
@@ -335,7 +346,7 @@ if hasInternet() then
         if not success then
             local logFile = io.open("/tmp/script.log", "a")
             io.output(logFile)
-            io.write("Error in odoo_bridge.lua: " .. error_message .. "\n")
+            io.write(bridge .. "Error in odoo_bridge.lua: " .. error_message .. "\n")
             io.close(logFile)
         end
     end

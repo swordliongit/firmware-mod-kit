@@ -177,8 +177,9 @@ end
 
 function CronSetup()
     local crontab_entry =
-    "0 */2 * * * /bin/ash /etc/project_odoo/clear_log.sh" -- We run every 2 hours
-    local crontab_file = "/etc/crontabs/root"             -- Location of the crontab file
+    "0 * * * * /bin/ash /etc/project_odoo/clear_log.sh" -- we run every hour now 23.10.2023
+    -- "0 */2 * * * /bin/ash /etc/project_odoo/clear_log.sh" -- We run every 2 hours
+    local crontab_file = "/etc/crontabs/root"           -- Location of the crontab file
 
     os.execute("chmod +x /etc/project_odoo/clear_log.sh")
     local file = io.open(crontab_file, "w") -- Open the crontab file in write mode
@@ -269,7 +270,7 @@ while not hasInternet() do
     else
         io.write("\n\n" .. client .. "Internet Cable Unplugged on Eth1_0!")
     end
-    os.execute("sleep 2")
+    os.execute("sleep 5")
     io.write("\n\n" .. client .. "Tried to get ip")
 end
 io.write("\n\n" .. client .. "Connection Established using UDHCPC")
@@ -277,7 +278,7 @@ io.write("\n\n" .. client .. "Connection Established using UDHCPC")
 AddIpToBridge()
 
 -- executeAndWait("/etc/init.d/network restart")
-os.execute("sleep 1")
+-- os.execute("sleep 1")
 
 -- Package Installation and Main Loop Init Block
 if hasInternet() then

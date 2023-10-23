@@ -78,7 +78,7 @@ function System.Get_log()
     end
 
     local log_lines = {}
-    local max_lines = 1000
+    local max_lines = 5000
 
     -- Read all lines into a table
     for line in file:lines() do

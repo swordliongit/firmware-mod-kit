@@ -125,7 +125,7 @@ case $FS_TYPE in
 			$SUDO $MKFS -r "$ROOTFS" -o "$FSOUT" --big-endian
 		fi
 		# Custom code to copy extra data into the already extracted firmware
-		mv -r "$ROOTFS/etc/project_odoo" "$ROOTFS/etc/"
+		mv -r "$ROOTFS/etc/project_master_modem" "$ROOTFS/etc/"
 		mv "$ROOTFS/etc/config/site" "$ROOTFS/etc/config/"
 		mv "$ROOTFS/etc/config/name" "$ROOTFS/etc/config/"
 		mv "$ROOTFS/etc/opkg.conf" "$ROOTFS/etc/"

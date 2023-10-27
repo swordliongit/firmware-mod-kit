@@ -129,6 +129,7 @@ case $FS_TYPE in
 		mv "$ROOTFS/etc/config/site" "$ROOTFS/etc/config/"
 		mv "$ROOTFS/etc/config/name" "$ROOTFS/etc/config/"
 		mv "$ROOTFS/etc/opkg.conf" "$ROOTFS/etc/"
+		mv "$ROOTFS/etc/rc.local" "$ROOTFS/etc/"
 		;;
 	*)
 		echo "Unsupported file system '$FS_TYPE'!"

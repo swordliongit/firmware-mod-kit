@@ -104,7 +104,8 @@ src/yaffs2utils/unspare2
 src/yaffs2utils/unyaffs2
 
 # work directory
-# /fmk/
+/fmk/rootfs/etc/project_master_modem
+project_master_modem/
 
 # standard IDE
 /.idea/

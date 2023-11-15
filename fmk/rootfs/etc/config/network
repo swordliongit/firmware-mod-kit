@@ -6,7 +6,7 @@ config 'interface' 'loopback'
         option 'netmask' '255.0.0.0'
 
 config 'interface' 'lan'
-        option 'ifname' 'eth1_0.5 eth1_1 eth1_2 eth1_3 ra0 ra1 ra2'
+        option 'ifname' 'eth1_0 eth1_1 eth1_2 eth1_3 ra0 ra1 ra2'
         option 'type' 'bridge'
         option 'proto' 'dhcp'
 

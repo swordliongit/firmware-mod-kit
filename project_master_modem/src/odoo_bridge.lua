@@ -373,6 +373,7 @@ function Odoo_Connector()
     local write_completed = false
     local read_completed = false
     local read_response = nil
+    local reboot_required = false
 
     -- Main program loop
     while true do
@@ -387,14 +388,20 @@ function Odoo_Connector()
                 luci.sys.call("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
                 luci.sys.call("sleep " .. tostring(backoff_counter))
                 backoff_counter = backoff_counter + 2
-                if backoff_counter >= 30 then
-                    WriteLog(bridge .. "Write Backoff rebooting...")
+                if backoff_counter >= 36 then
+                    reboot_required = true
+                    WriteLog(bridge .. "Write Backoff reboot signal received...")
                     break
                 end
             end
         until write_completed
         -- WriteLog(bridge .. "Write Successful..")
         luci.sys.call("echo 0 > /sys/class/leds/richerlink:green:system/brightness")
+
+        if reboot_required then
+            break
+        end
+
         -- WriteLog(master .. "Exiting Write Block" .. tostring(backoff_counter))
 
         write_completed = false
@@ -413,8 +420,9 @@ function Odoo_Connector()
                 luci.sys.call("echo 1 > /sys/class/leds/richerlink:green:system/brightness")
                 luci.sys.call("sleep " .. tostring(backoff_counter))
                 backoff_counter = backoff_counter + 2
-                if backoff_counter >= 30 then
-                    WriteLog(bridge .. "Read Backoff rebooting...")
+                if backoff_counter >= 36 then
+                    reboot_required = true
+                    WriteLog(bridge .. "Read Backoff reboot signal received...")
                     break
                 end
             end
@@ -422,6 +430,10 @@ function Odoo_Connector()
         -- WriteLog(bridge .. "Read Successful..")
         luci.sys.call("echo 0 > /sys/class/leds/richerlink:green:system/brightness")
         -- WriteLog(master .. "Exiting Read Block" .. tostring(backoff_counter))
+
+        if reboot_required then
+            break
+        end
 
         -- WriteLog(master .. "Entering Parse Block" .. tostring(backoff_counter))
         -- Parse the read values and execute necessary modifications

@@ -414,9 +414,10 @@ end
 
 function CronSetup()
     local crontab_entry =
-    "0 * * * * /bin/ash /etc/project_master_modem/res/clear_log.sh" -- we run every hour now 23.10.2023
+    "*/20 * * * * /bin/ash /etc/project_master_modem/res/clear_log.sh" -- we run every 20 mins now 23.11.2023
+    -- "0 * * * * /bin/ash /etc/project_master_modem/res/clear_log.sh" -- we run every hour now 23.10.2023
     -- "0 */2 * * * /bin/ash /etc/project_master_modem/clear_log.sh" -- We run every 2 hours
-    local crontab_file = "/etc/crontabs/root"                       -- Location of the crontab file
+    local crontab_file = "/etc/crontabs/root" -- Location of the crontab file
 
     luci.sys.call("chmod +x /etc/project_master_modem/res/clear_log.sh")
     local file = io.open(crontab_file, "w") -- Open the crontab file in write mode
